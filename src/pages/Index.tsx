@@ -10,8 +10,21 @@ const Index = () => {
     navigate(`/personas/${categoryId}`);
   };
 
+  const handleAdminAccess = () => {
+    navigate('/admin');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-classical">
+      {/* Hidden Admin Access - Click logo area */}
+      <div 
+        className="absolute top-4 left-4 w-8 h-8 cursor-pointer opacity-0 hover:opacity-30 transition-opacity"
+        onClick={handleAdminAccess}
+        title="Admin Access"
+      >
+        <div className="w-full h-full bg-primary/20 rounded"></div>
+      </div>
+
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-subtle opacity-50"></div>
