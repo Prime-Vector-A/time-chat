@@ -16,16 +16,16 @@ import {
   Plus,
   MoreVertical,
   Menu,
-  Shield
+  Shield,
+  Loader2
 } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
 import SuggestionsButton from "@/components/SuggestionsButton";
+import { ChatService, type ChatMessage } from "@/services/chatService";
+import { useToast } from "@/hooks/use-toast";
 
-interface Message {
+interface Message extends ChatMessage {
   id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
 }
 
 interface Thread {
@@ -44,8 +44,10 @@ const Conversation = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showGuidelines, setShowGuidelines] = useState(false);
+  const { toast } = useToast();
   const [threads, setThreads] = useState<Thread[]>([
     {
       id: "1",
@@ -105,8 +107,8 @@ const Conversation = () => {
     navigate(`/prompts/${character.id}`);
   };
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
+  const handleSendMessage = async () => {
+    if (!inputValue.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -116,29 +118,52 @@ const Conversation = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageToSend = inputValue;
     setInputValue("");
+    setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      // Get conversation history for context
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content,
+        timestamp: msg.timestamp
+      }));
+
+      const response = await ChatService.sendMessage(
+        character.id,
+        messageToSend,
+        conversationHistory,
+        promptType || undefined
+      );
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        role: "assistant", 
-        content: generateAIResponse(inputValue, character),
+        role: "assistant",
+        content: response.message,
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
-  };
 
-  const generateAIResponse = (userInput: string, char: any) => {
-    // Simple response generation for demo
-    const responses = [
-      `Indeed, that is a profound question. In my experience, ${userInput.toLowerCase()} reminds me of the challenges we faced in my time...`,
-      `Your inquiry touches upon matters close to my heart. Let me share what I have learned about such things...`,
-      `Ah, this brings to mind a particular moment from my life when I too grappled with such thoughts...`,
-      `From my perspective, having lived through what I have, I would say that your question reflects...`
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
+      setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get response from the AI. Please check that your OpenAI API key is configured.",
+        variant: "destructive",
+      });
+      
+      // Add error message to chat
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "I apologize, but I'm having trouble responding right now. Please make sure the OpenAI API key is properly configured in the admin settings.",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleToggleRecording = () => {
@@ -334,18 +359,24 @@ const Conversation = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={`Message ${character.name}...`}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
               className="flex-1"
+              disabled={isLoading}
             />
             <Button
               variant={isRecording ? "destructive" : "outline"}
               size="icon"
               onClick={handleToggleRecording}
+              disabled={isLoading}
             >
               {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </Button>
-            <Button onClick={handleSendMessage} size="icon">
-              <Send className="w-4 h-4" />
+            <Button 
+              onClick={handleSendMessage} 
+              size="icon"
+              disabled={isLoading || !inputValue.trim()}
+            >
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </Button>
           </div>
         </div>
