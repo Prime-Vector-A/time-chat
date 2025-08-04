@@ -180,6 +180,32 @@ const ConversationPrompts = () => {
           <p className="text-sm text-muted-foreground mt-1">{character.personality.era}</p>
         </div>
 
+        {/* Character Background */}
+        <div className="mb-4">
+          <Card className="bg-card/95 backdrop-blur-sm border-border/50">
+            <CardContent className="p-4">
+              <h3 className="font-semibold mb-2">About {character.name}</h3>
+              <p className="text-muted-foreground text-sm mb-3">{character.description}</p>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <h4 className="font-medium mb-2">Core Values</h4>
+                <div className="flex flex-wrap gap-1">
+                  {character.personality.values.slice(0, 3).map((value, index) => (
+                    <span key={index} className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs">
+                      {value}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Speaking Style</h4>
+                <p className="text-muted-foreground text-xs">{character.personality.tone}</p>
+              </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Conversation Prompts */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           {conversationPrompts.map((prompt) => (
@@ -211,32 +237,6 @@ const ConversationPrompts = () => {
             <FileText className="w-4 h-4 mr-2" />
             View Sources
           </Button>
-        </div>
-
-        {/* Character Background */}
-        <div className="flex-1 overflow-y-auto">
-          <Card className="bg-card/95 backdrop-blur-sm border-border/50">
-            <CardContent className="p-4">
-              <h3 className="font-semibold mb-2">About {character.name}</h3>
-              <p className="text-muted-foreground text-sm mb-3">{character.description}</p>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <h4 className="font-medium mb-2">Core Values</h4>
-                <div className="flex flex-wrap gap-1">
-                  {character.personality.values.slice(0, 3).map((value, index) => (
-                    <span key={index} className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs">
-                      {value}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h4 className="font-medium mb-2">Speaking Style</h4>
-                <p className="text-muted-foreground text-xs">{character.personality.tone}</p>
-              </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 
