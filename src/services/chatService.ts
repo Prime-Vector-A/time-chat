@@ -1,5 +1,3 @@
-import { supabase } from '@/integrations/supabase/client';
-
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -19,8 +17,14 @@ export class ChatService {
     promptType?: string
   ): Promise<ChatResponse> {
     try {
-      const { data, error } = await supabase.functions.invoke('chat-with-character', {
-        body: {
+      // Call the Supabase Edge Function directly
+      const response = await fetch(`${window.location.origin}/functions/v1/chat-with-character`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`,
+        },
+        body: JSON.stringify({
           characterId,
           message,
           conversationHistory: conversationHistory.map(msg => ({
@@ -28,14 +32,17 @@ export class ChatService {
             content: msg.content
           })),
           promptType
-        }
+        })
       });
 
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error('Failed to get response from AI');
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Function call error:', response.status, errorText);
+        throw new Error(`HTTP ${response.status}: Failed to get response from AI`);
       }
 
+      const data = await response.json();
+      
       if (data.error) {
         throw new Error(data.error);
       }
