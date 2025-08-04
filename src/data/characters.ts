@@ -500,7 +500,7 @@ export const characters: Character[] = [
   {
     id: "frontier-woman",
     name: "Frontier Woman",
-    title: "Prairie Wife & Mother", 
+    title: "Prairie Wife and Mother, mid-1800s", 
     category: "american-leaders",
     description: "Learn about frontier life from a strong woman who built America with her hands and heart.",
     image: frontierWomanImg,
@@ -713,9 +713,9 @@ export const characters: Character[] = [
   },
   {
     id: "wwii-soldier",
-    name: "WWI American Soldier",
+    name: "WWII American Soldier",
     title: "Combat Veteran",
-    category: "wwii-heroes", 
+    category: "wwii-heroes",
     description: "Hear firsthand accounts of courage and brotherhood from a soldier who served.",
     image: wwiiSoldierImg,
     voiceId: "nPczCjzI2devNBz1zQrb", // Brian - strong, veteran voice
