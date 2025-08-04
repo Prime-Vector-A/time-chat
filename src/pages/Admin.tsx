@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, Plus, Filter, Search, MoreHorizontal, Shield, Edit, Save, Bug, Lightbulb, Clock, CheckCircle, AlertCircle, Eye } from "lucide-react";
+import { X, Plus, Filter, Search, MoreHorizontal, Shield, Edit, Save, Bug, Lightbulb, Clock, CheckCircle, AlertCircle, Eye, MessageCircle } from "lucide-react";
 import { characters } from "@/data/characters";
 import { defaultGuidelines, type EthicalGuideline } from "@/data/guidelines";
 import { Suggestion } from "@/components/SuggestionsButton";
@@ -238,7 +238,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="sources" className="w-full flex-1 flex flex-col">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="sources">Sources Management</TabsTrigger>
             <TabsTrigger value="suggestions">
               Suggestions 
@@ -249,6 +249,7 @@ const Admin = () => {
               )}
             </TabsTrigger>
             <TabsTrigger value="personas">Persona Library</TabsTrigger>
+            <TabsTrigger value="character-details">Character Details</TabsTrigger>
           </TabsList>
 
           <TabsContent value="sources" className="flex-1">
@@ -543,6 +544,94 @@ const Admin = () => {
                             {(persona as any).status || "active"}
                           </Badge>
                         </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="character-details" className="flex-1">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle>Character Details Management</CardTitle>
+                <CardDescription>
+                  Manage core values and speaking styles for historical characters
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-hidden">
+                <div className="space-y-4 h-full flex flex-col">
+                  <Input
+                    placeholder="Search characters..."
+                    value={searchPersonas}
+                    onChange={(e) => setSearchPersonas(e.target.value)}
+                  />
+                  
+                  <ScrollArea className="flex-1">
+                    <div className="space-y-4">
+                      {characters.filter(char => 
+                        char.name.toLowerCase().includes(searchPersonas.toLowerCase())
+                      ).map((character) => (
+                        <Card key={character.id} className="w-full">
+                          <CardHeader className="pb-3">
+                            <div className="flex items-center gap-3">
+                              <img 
+                                src={character.image} 
+                                alt={character.name}
+                                className="w-12 h-12 rounded-full object-cover border-2 border-primary/20"
+                              />
+                              <div>
+                                <CardTitle className="text-lg">{character.name}</CardTitle>
+                                <CardDescription>{character.title}</CardDescription>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              {/* Core Values Section */}
+                              <div>
+                                <h4 className="font-medium mb-3 flex items-center gap-2">
+                                  <Shield className="w-4 h-4" />
+                                  Core Values
+                                </h4>
+                                <div className="space-y-2">
+                                  <div className="flex flex-wrap gap-2">
+                                    {character.personality.values.map((value, index) => (
+                                      <span 
+                                        key={index} 
+                                        className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm border border-primary/20"
+                                      >
+                                        {value}
+                                      </span>
+                                    ))}
+                                  </div>
+                                  <Button variant="outline" size="sm" className="mt-2">
+                                    <Edit className="w-3 h-3 mr-1" />
+                                    Edit Values
+                                  </Button>
+                                </div>
+                              </div>
+
+                              {/* Speaking Style Section */}
+                              <div>
+                                <h4 className="font-medium mb-3 flex items-center gap-2">
+                                  <MessageCircle className="w-4 h-4" />
+                                  Speaking Style
+                                </h4>
+                                <div className="space-y-2">
+                                  <p className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg">
+                                    {character.personality.tone}
+                                  </p>
+                                  <Button variant="outline" size="sm">
+                                    <Edit className="w-3 h-3 mr-1" />
+                                    Edit Style
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
                       ))}
                     </div>
                   </ScrollArea>
