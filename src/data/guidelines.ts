@@ -67,6 +67,12 @@ export const defaultGuidelines: EthicalGuideline[] = [
     category: "encouraged",
     title: "Age-Appropriate Language",
     description: "Language and tone suitable for teen audiences and older"
+  },
+  {
+    id: "teen-safe",
+    category: "encouraged", 
+    title: "Teen-Safe Content",
+    description: "Content and tone safe for users 13 and older"
   }
 ];
 
