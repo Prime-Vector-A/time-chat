@@ -207,7 +207,7 @@ const ConversationPrompts = () => {
         </div>
 
         {/* Conversation Prompts */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           {conversationPrompts.map((prompt) => (
             <Card 
               key={prompt.id}

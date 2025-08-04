@@ -17,7 +17,8 @@ import {
   MoreVertical,
   Menu,
   Shield,
-  Loader2
+  Loader2,
+  X
 } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
 import SuggestionsButton from "@/components/SuggestionsButton";
@@ -47,6 +48,7 @@ const Conversation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showGuidelines, setShowGuidelines] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const { toast } = useToast();
   const [threads, setThreads] = useState<Thread[]>([
     {
@@ -195,8 +197,16 @@ const Conversation = () => {
 
   return (
     <div className="h-screen bg-gradient-classical flex overflow-hidden">
+      {/* Mobile Sidebar Overlay */}
+      {showSidebar && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setShowSidebar(false)}
+        />
+      )}
+      
       {/* Sidebar */}
-      <div className="w-80 bg-card/95 backdrop-blur-sm border-r border-border/50 p-4 flex flex-col h-full">
+      <div className={`${showSidebar ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:relative z-50 w-80 bg-card/95 backdrop-blur-sm border-r border-border/50 p-4 flex flex-col h-full transition-transform duration-300`}>
         <div className="flex items-center gap-2 mb-6">
           <Button variant="outline" size="sm" onClick={handleBackToPrompts}>
             <ArrowLeft className="w-4 h-4" />
@@ -209,6 +219,14 @@ const Conversation = () => {
             />
             <span className="font-medium text-sm">{character.name}</span>
           </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="ml-auto lg:hidden"
+            onClick={() => setShowSidebar(false)}
+          >
+            <X className="w-4 h-4" />
+          </Button>
         </div>
 
         <div className="flex-1 overflow-y-auto">
@@ -270,6 +288,14 @@ const Conversation = () => {
         {/* Chat Header */}
         <div className="p-4 border-b border-border/50 bg-card/95 backdrop-blur-sm flex-shrink-0 relative">
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="lg:hidden"
+              onClick={() => setShowSidebar(true)}
+            >
+              <Menu className="w-4 h-4" />
+            </Button>
             <img 
               src={character.image} 
               alt={character.name}
@@ -279,7 +305,7 @@ const Conversation = () => {
               <h2 className="font-semibold">{character.name}</h2>
               <p className="text-sm text-muted-foreground">{character.title}</p>
             </div>
-            <Badge variant="secondary" className="mr-2">
+            <Badge variant="secondary" className="mr-2 hidden sm:block">
               {promptType ? promptType.charAt(0).toUpperCase() + promptType.slice(1) : "General"}
             </Badge>
             
@@ -312,10 +338,10 @@ const Conversation = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+        <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-4 min-h-0">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] ${message.role === 'user' ? 'order-2' : 'order-1'}`}>
+              <div className={`max-w-[85%] sm:max-w-[80%] ${message.role === 'user' ? 'order-2' : 'order-1'}`}>
                 {message.role === 'assistant' && (
                   <div className="flex items-center gap-2 mb-2">
                     <img 
@@ -353,14 +379,14 @@ const Conversation = () => {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 border-t border-border/50 bg-card/95 backdrop-blur-sm flex-shrink-0">
+        <div className="p-2 sm:p-4 border-t border-border/50 bg-card/95 backdrop-blur-sm flex-shrink-0">
           <div className="flex items-center gap-2">
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={`Message ${character.name}...`}
               onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
-              className="flex-1"
+              className="flex-1 text-sm"
               disabled={isLoading}
             />
             <Button
@@ -368,6 +394,7 @@ const Conversation = () => {
               size="icon"
               onClick={handleToggleRecording}
               disabled={isLoading}
+              className="hidden sm:flex"
             >
               {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </Button>
