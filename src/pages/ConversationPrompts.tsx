@@ -6,14 +6,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeft, BookOpen, Heart, Lightbulb, Users, MessageCircle, FileText, Menu, Shield, ExternalLink, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, BookOpen, Heart, Lightbulb, Users, MessageCircle, FileText, Menu, Shield, ExternalLink, X, Plus } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
 import SuggestionsButton from "@/components/SuggestionsButton";
+import { useToast } from "@/hooks/use-toast";
+import type { Suggestion } from "@/components/SuggestionsButton";
 
 const ConversationPrompts = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showGuidelines, setShowGuidelines] = useState(false);
   const [showSources, setShowSources] = useState(false);
+  const [suggestedUrl, setSuggestedUrl] = useState("");
+  const [suggestedDescription, setSuggestedDescription] = useState("");
+  const { toast } = useToast();
   const navigate = useNavigate();
   const { characterId } = useParams<{ characterId: string }>();
   
@@ -43,6 +52,45 @@ const ConversationPrompts = () => {
 
   const handleFeedback = () => {
     console.log("Feedback clicked");
+  };
+
+  const handleSuggestSource = () => {
+    if (!suggestedUrl.trim() || !suggestedDescription.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide both URL and description.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const suggestion: Suggestion = {
+      id: Date.now().toString(),
+      type: "source",
+      title: `Source suggestion for ${character.name}`,
+      description: suggestedDescription.trim(),
+      page: `Sources - ${character.name}`,
+      timestamp: new Date(),
+      status: "new",
+      personaId: character.id,
+      personaName: character.name,
+      sourceUrl: suggestedUrl.trim(),
+      sourceTitle: "User Suggested Source"
+    };
+
+    // Get existing suggestions from localStorage
+    const existingSuggestions = JSON.parse(localStorage.getItem("suggestions") || "[]");
+    const updatedSuggestions = [...existingSuggestions, suggestion];
+    localStorage.setItem("suggestions", JSON.stringify(updatedSuggestions));
+
+    toast({
+      title: "Source Suggested",
+      description: "Thank you! Your source suggestion has been submitted for review.",
+    });
+
+    // Reset form
+    setSuggestedUrl("");
+    setSuggestedDescription("");
   };
 
   const handleShowGuidelines = () => {
@@ -258,6 +306,57 @@ const ConversationPrompts = () => {
               )}
             </div>
           </ScrollArea>
+
+          <Separator className="my-4" />
+
+          {/* Source Suggestion Section */}
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Suggest a New Source
+              </h4>
+              <p className="text-xs text-muted-foreground mb-3">
+                Know of a relevant source for {character.name}? Help us improve the knowledge base!
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="suggested-url" className="text-sm">Source URL</Label>
+                <Input
+                  id="suggested-url"
+                  type="url"
+                  placeholder="https://example.com/article"
+                  value={suggestedUrl}
+                  onChange={(e) => setSuggestedUrl(e.target.value)}
+                  className="text-sm"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="suggested-description" className="text-sm">Why is this source relevant?</Label>
+                <Textarea
+                  id="suggested-description"
+                  placeholder="Explain why this source would be valuable for understanding this character..."
+                  value={suggestedDescription}
+                  onChange={(e) => setSuggestedDescription(e.target.value)}
+                  rows={3}
+                  className="text-sm"
+                />
+              </div>
+
+              <Button 
+                onClick={handleSuggestSource} 
+                size="sm" 
+                className="w-full"
+                disabled={!suggestedUrl.trim() || !suggestedDescription.trim()}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Suggest Source
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
