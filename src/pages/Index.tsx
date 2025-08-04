@@ -128,7 +128,7 @@ const Index = () => {
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6 text-center pr-16">
         <h1 className="text-4xl font-bold text-foreground mb-2">
-          Conversations With Heroes
+          Time Chat
         </h1>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Choose a heroic figure to begin your conversation
@@ -186,7 +186,7 @@ const Index = () => {
                 <div>
                   <CardTitle className="text-2xl flex items-center gap-2">
                     <Info className="w-6 h-6 text-primary" />
-                    About Conversations With Heroes
+                    About Time Chat
                   </CardTitle>
                   <CardDescription>
                     Learn more about this application
