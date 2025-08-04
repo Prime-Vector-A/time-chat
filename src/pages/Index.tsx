@@ -102,13 +102,13 @@ const Index = () => {
               className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50"
               onClick={() => handlePersonaSelect(character.id)}
             >
-              <CardHeader className="text-center pb-2 px-3 pt-3">
+              <CardHeader className="text-center pb-1 px-3 pt-3">
                 <img 
                   src={character.image} 
                   alt={character.name}
-                  className="w-16 h-16 rounded-full mx-auto object-cover border-2 border-primary/20 mb-2"
+                  className="w-16 h-16 rounded-full mx-auto object-cover border-2 border-primary/20 mb-1"
                 />
-                <CardTitle className="text-xs leading-tight">{character.name}</CardTitle>
+                <CardTitle className="text-xs leading-tight mb-1">{character.name}</CardTitle>
                 <CardDescription className="text-xs text-muted-foreground">
                   {character.title}
                 </CardDescription>

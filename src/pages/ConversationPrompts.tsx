@@ -147,15 +147,16 @@ const ConversationPrompts = () => {
           ))}
         </div>
 
-        {/* Sources Button */}
+        {/* Sources Button - Read Only for Users */}
         <div className="text-center mb-4">
           <Button 
             variant="outline" 
-            onClick={handleSources}
-            className="px-8"
+            disabled
+            className="px-8 opacity-50 cursor-not-allowed"
+            title="Sources can only be managed by administrators"
           >
             <FileText className="w-4 h-4 mr-2" />
-            Sources
+            Sources (Admin Only)
           </Button>
         </div>
 
