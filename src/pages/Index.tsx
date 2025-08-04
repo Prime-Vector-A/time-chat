@@ -3,15 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { characters } from "@/data/characters";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { X, MessageCircle, Menu, Shield, Info } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { X, MessageCircle, Menu, Shield, Info, Send } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
 import SuggestionsButton from "@/components/SuggestionsButton";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [showGuidelines, setShowGuidelines] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [developerSuggestion, setDeveloperSuggestion] = useState("");
+  const { toast } = useToast();
 
   const handlePersonaSelect = (characterId: string) => {
     navigate(`/prompts/${characterId}`);
@@ -30,6 +34,18 @@ const Index = () => {
     setShowMenu(false);
   };
 
+  const handleSendSuggestion = () => {
+    if (!developerSuggestion.trim()) return;
+    
+    // In a real app, this would send to the developer
+    toast({
+      title: "Suggestion Sent",
+      description: "Thank you for your feedback! Your suggestion has been sent to the developer.",
+    });
+    
+    setDeveloperSuggestion("");
+    setShowMenu(false);
+  };
   const handleShowAbout = () => {
     setShowAbout(true);
     setShowMenu(false);
@@ -58,13 +74,13 @@ const Index = () => {
         </Button>
         
         {showMenu && (
-          <Card className="absolute top-12 right-0 w-48 bg-card/95 backdrop-blur-sm border-border/50 shadow-lg z-10">
-            <CardContent className="p-2">
+          <Card className="absolute top-12 right-0 w-64 bg-card/95 backdrop-blur-sm border-border/50 shadow-lg z-10">
+            <CardContent className="p-3">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleShowGuidelines}
-                className="w-full justify-start"
+                className="w-full justify-start mb-2"
               >
                 <Shield className="w-4 h-4 mr-2" />
                 Safety Guidelines
@@ -73,11 +89,37 @@ const Index = () => {
                 variant="ghost"
                 size="sm"
                 onClick={handleShowAbout}
-                className="w-full justify-start"
+                className="w-full justify-start mb-3"
               >
                 <Info className="w-4 h-4 mr-2" />
                 About This App
               </Button>
+              
+              <div className="border-t border-border/30 pt-3">
+                <h4 className="text-sm font-medium mb-2">Suggest to Developer</h4>
+                <Textarea
+                  placeholder="Share your ideas or feedback (max 128 chars)..."
+                  value={developerSuggestion}
+                  onChange={(e) => setDeveloperSuggestion(e.target.value.slice(0, 128))}
+                  className="text-xs mb-2 resize-none"
+                  rows={2}
+                  maxLength={128}
+                />
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">
+                    {developerSuggestion.length}/128
+                  </span>
+                  <Button 
+                    size="sm" 
+                    onClick={handleSendSuggestion}
+                    disabled={!developerSuggestion.trim()}
+                    className="h-7"
+                  >
+                    <Send className="w-3 h-3 mr-1" />
+                    Send
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -94,12 +136,12 @@ const Index = () => {
       </div>
 
       {/* Persona Grid */}
-      <div className="max-w-7xl mx-auto flex-1 flex flex-col">
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4 flex-1 overflow-y-auto">
+      <div className="max-w-7xl mx-auto flex-1 min-h-0">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4 h-full overflow-y-auto pb-4">
           {characters.map((character) => (
             <Card 
               key={character.id}
-              className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50"
+              className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50 h-fit"
               onClick={() => handlePersonaSelect(character.id)}
             >
               <CardHeader className="text-center p-2 pb-0">

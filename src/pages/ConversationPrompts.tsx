@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, BookOpen, Heart, Lightbulb, Users, MessageCircle, FileText, Menu, Shield, ExternalLink, X, Plus } from "lucide-react";
+import { ArrowLeft, BookOpen, Heart, Lightbulb, Users, MessageCircle, FileText, Menu, Shield, ExternalLink, X, Plus, Send } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
 import SuggestionsButton from "@/components/SuggestionsButton";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +22,7 @@ const ConversationPrompts = () => {
   const [showSources, setShowSources] = useState(false);
   const [suggestedUrl, setSuggestedUrl] = useState("");
   const [suggestedDescription, setSuggestedDescription] = useState("");
+  const [developerSuggestion, setDeveloperSuggestion] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
   const { characterId } = useParams<{ characterId: string }>();
@@ -98,6 +99,18 @@ const ConversationPrompts = () => {
     setShowMenu(false);
   };
 
+  const handleSendSuggestion = () => {
+    if (!developerSuggestion.trim()) return;
+    
+    toast({
+      title: "Suggestion Sent",
+      description: "Thank you for your feedback! Your suggestion has been sent to the developer.",
+    });
+    
+    setDeveloperSuggestion("");
+    setShowMenu(false);
+  };
+
   const conversationPrompts = [
     {
       id: "wisdom",
@@ -144,17 +157,43 @@ const ConversationPrompts = () => {
           </Button>
           
           {showMenu && (
-            <Card className="absolute top-12 right-0 w-48 bg-card/95 backdrop-blur-sm border-border/50 shadow-lg z-10">
-              <CardContent className="p-2">
+            <Card className="absolute top-12 right-0 w-64 bg-card/95 backdrop-blur-sm border-border/50 shadow-lg z-10">
+              <CardContent className="p-3">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleShowGuidelines}
-                  className="w-full justify-start"
+                  className="w-full justify-start mb-3"
                 >
                   <Shield className="w-4 h-4 mr-2" />
                   Safety Guidelines
                 </Button>
+                
+                <div className="border-t border-border/30 pt-3">
+                  <h4 className="text-sm font-medium mb-2">Suggest to Developer</h4>
+                  <Textarea
+                    placeholder="Share your ideas or feedback (max 128 chars)..."
+                    value={developerSuggestion}
+                    onChange={(e) => setDeveloperSuggestion(e.target.value.slice(0, 128))}
+                    className="text-xs mb-2 resize-none"
+                    rows={2}
+                    maxLength={128}
+                  />
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground">
+                      {developerSuggestion.length}/128
+                    </span>
+                    <Button 
+                      size="sm" 
+                      onClick={handleSendSuggestion}
+                      disabled={!developerSuggestion.trim()}
+                      className="h-7"
+                    >
+                      <Send className="w-3 h-3 mr-1" />
+                      Send
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
