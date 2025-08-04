@@ -2,14 +2,18 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCharacterById } from "@/data/characters";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, BookOpen, Heart, Lightbulb, Users, MessageCircle, FileText, Menu, Shield } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ArrowLeft, BookOpen, Heart, Lightbulb, Users, MessageCircle, FileText, Menu, Shield, ExternalLink, X } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
 import SuggestionsButton from "@/components/SuggestionsButton";
 
 const ConversationPrompts = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showGuidelines, setShowGuidelines] = useState(false);
+  const [showSources, setShowSources] = useState(false);
   const navigate = useNavigate();
   const { characterId } = useParams<{ characterId: string }>();
   
@@ -34,7 +38,7 @@ const ConversationPrompts = () => {
   };
 
   const handleSources = () => {
-    navigate(`/admin`);
+    setShowSources(true);
   };
 
   const handleFeedback = () => {
@@ -147,16 +151,15 @@ const ConversationPrompts = () => {
           ))}
         </div>
 
-        {/* Sources Button - Read Only for Users */}
+        {/* Sources Button */}
         <div className="text-center mb-4">
           <Button 
             variant="outline" 
-            disabled
-            className="px-8 opacity-50 cursor-not-allowed"
-            title="Sources can only be managed by administrators"
+            onClick={handleSources}
+            className="px-8"
           >
             <FileText className="w-4 h-4 mr-2" />
-            Sources (Admin Only)
+            View Sources
           </Button>
         </div>
 
@@ -197,6 +200,66 @@ const ConversationPrompts = () => {
       </Button>
 
       <SuggestionsButton currentPage={`Conversation Prompts - ${character.name}`} />
+
+      {/* Sources Modal */}
+      <Dialog open={showSources} onOpenChange={setShowSources}>
+        <DialogContent className="sm:max-w-3xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Sources for {character.name}
+            </DialogTitle>
+            <DialogDescription>
+              Historical sources and references used for this character's knowledge base
+            </DialogDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="max-h-[60vh] w-full">
+            <div className="space-y-4 pr-4">
+              {character.sources && character.sources.length > 0 ? (
+                character.sources.map((source) => (
+                  <Card key={source.id} className="w-full">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <CardTitle className="text-base leading-tight mb-2">
+                            {source.title}
+                          </CardTitle>
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline" className="text-xs">
+                              {source.type}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              Added {new Date(source.dateAdded).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            {source.description}
+                          </p>
+                          <a 
+                            href={source.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            View Source
+                          </a>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No sources available for this character yet.</p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       {/* Ethical Guidelines Modal */}
       <EthicalGuidelines 
