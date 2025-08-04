@@ -169,15 +169,19 @@ const ConversationPrompts = () => {
         </div>
 
         {/* Character Header */}
-        <div className="text-center mb-6">
-          <img 
-            src={character.image} 
-            alt={character.name}
-            className="w-24 h-24 rounded-full object-cover border-4 border-primary/20 mx-auto mb-4"
-          />
-          <h1 className="text-3xl font-bold text-foreground mb-1">{character.name}</h1>
-          <p className="text-lg text-muted-foreground">{character.title}</p>
-          <p className="text-sm text-muted-foreground mt-1">{character.personality.era}</p>
+        <div className="mb-4">
+          <div className="flex items-center gap-4">
+            <img 
+              src={character.image} 
+              alt={character.name}
+              className="w-16 h-16 rounded-full object-cover border-4 border-primary/20 flex-shrink-0"
+            />
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold text-foreground mb-1">{character.name}</h1>
+              <p className="text-base text-muted-foreground">{character.title}</p>
+              <p className="text-xs text-muted-foreground">{character.personality.era}</p>
+            </div>
+          </div>
         </div>
 
         {/* Character Background */}
@@ -264,58 +268,51 @@ const ConversationPrompts = () => {
             </DialogDescription>
           </DialogHeader>
           
-          {/* Source Suggestion Section - Moved to top */}
-          <div className="space-y-4 mb-6">
-            <div>
-              <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                <Plus className="w-4 h-4" />
-                Suggest a New Source
-              </h4>
-              <p className="text-xs text-muted-foreground mb-3">
-                Know of a relevant source for {character.name}? Help us improve the knowledge base!
-              </p>
+          {/* Source Suggestion Section - Compact */}
+          <div className="bg-muted/30 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Plus className="w-4 h-4" />
+              <h4 className="font-semibold text-sm">Suggest a New Source</h4>
             </div>
-
-            <div className="space-y-3">
-              <div>
-                <Label htmlFor="suggested-url" className="text-sm">Source URL</Label>
-                <Input
-                  id="suggested-url"
-                  type="url"
-                  placeholder="https://example.com/article"
-                  value={suggestedUrl}
-                  onChange={(e) => setSuggestedUrl(e.target.value)}
-                  className="text-sm"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="suggested-description" className="text-sm">Why is this source relevant?</Label>
-                <Textarea
-                  id="suggested-description"
-                  placeholder="Explain why this source would be valuable for understanding this character..."
-                  value={suggestedDescription}
-                  onChange={(e) => setSuggestedDescription(e.target.value)}
-                  rows={3}
-                  className="text-sm"
-                />
-              </div>
-
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+              <Input
+                id="suggested-url"
+                type="url"
+                placeholder="Source URL"
+                value={suggestedUrl}
+                onChange={(e) => setSuggestedUrl(e.target.value)}
+                className="text-sm h-8"
+              />
               <Button 
                 onClick={handleSuggestSource} 
                 size="sm" 
-                className="w-full"
+                className="h-8"
                 disabled={!suggestedUrl.trim() || !suggestedDescription.trim()}
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Suggest Source
+                <Plus className="w-3 h-3 mr-1" />
+                Suggest
               </Button>
             </div>
+            
+            <Textarea
+              id="suggested-description"
+              placeholder="Why is this source relevant?"
+              value={suggestedDescription}
+              onChange={(e) => setSuggestedDescription(e.target.value)}
+              rows={2}
+              className="text-sm"
+            />
           </div>
 
-          <Separator className="my-4" />
+          <div className="border-t border-border/30 pt-3">
+            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Current Sources
+            </h4>
+          </div>
 
-          <ScrollArea className="max-h-[40vh] w-full">
+          <ScrollArea className="flex-1 min-h-[300px] max-h-[50vh]">
             <div className="space-y-4 pr-4">
               {character.sources && character.sources.length > 0 ? (
                 character.sources.map((source) => (
