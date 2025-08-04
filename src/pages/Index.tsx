@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { characters } from "@/data/characters";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { X, MessageCircle, Menu, Shield } from "lucide-react";
+import { X, MessageCircle, Menu, Shield, Info } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [showPurpose, setShowPurpose] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [showGuidelines, setShowGuidelines] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   const handlePersonaSelect = (characterId: string) => {
     navigate(`/prompts/${characterId}`);
@@ -26,6 +26,11 @@ const Index = () => {
 
   const handleShowGuidelines = () => {
     setShowGuidelines(true);
+    setShowMenu(false);
+  };
+
+  const handleShowAbout = () => {
+    setShowAbout(true);
     setShowMenu(false);
   };
 
@@ -62,6 +67,15 @@ const Index = () => {
               >
                 <Shield className="w-4 h-4 mr-2" />
                 Safety Guidelines
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShowAbout}
+                className="w-full justify-start"
+              >
+                <Info className="w-4 h-4 mr-2" />
+                About This App
               </Button>
             </CardContent>
           </Card>
@@ -103,33 +117,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Dismissible Statement of Purpose */}
-      {showPurpose && (
-        <div className="fixed bottom-6 left-6 right-6 max-w-4xl mx-auto">
-          <Card className="bg-card/95 backdrop-blur-sm border-border/50 shadow-elegant">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 pr-4">
-                  <h3 className="font-semibold mb-1">About Conversations With Heroes</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Experience meaningful dialogue with heroic figures who shaped our world. 
-                    Each conversation is powered by advanced AI trained on historical texts.
-                  </p>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setShowPurpose(false)}
-                  className="h-8 w-8 p-0"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
       {/* Feedback Button */}
       <Button
         onClick={handleFeedback}
@@ -144,6 +131,68 @@ const Index = () => {
         isOpen={showGuidelines} 
         onClose={() => setShowGuidelines(false)} 
       />
+
+      {/* About Modal */}
+      {showAbout && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-2xl bg-card/95 backdrop-blur-sm border-border/50">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    <Info className="w-6 h-6 text-primary" />
+                    About Conversations With Heroes
+                  </CardTitle>
+                  <CardDescription>
+                    Learn more about this application
+                  </CardDescription>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setShowAbout(false)}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-muted-foreground">
+                  Experience meaningful dialogue with heroic figures who shaped our world. 
+                  Each conversation is powered by advanced AI trained on historical texts, 
+                  personalities, and documented speech patterns to create authentic interactions.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-semibold mb-2">✝️ Christian Leaders</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Speak with influential Christian figures throughout history
+                    </p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-semibold mb-2">🇺🇸 American Leaders</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Converse with founders and pioneers of America
+                    </p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-semibold mb-2">🌍 WWII Heroes</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Meet those who lived through history's defining moment
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="border-t border-border/20 pt-4">
+                  <p className="text-sm text-muted-foreground text-center">
+                    All conversations are guided by ethical guidelines to ensure respectful, 
+                    educational, and age-appropriate interactions.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
