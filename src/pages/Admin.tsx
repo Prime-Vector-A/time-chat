@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { X, Plus, Filter, Search, MoreHorizontal, Shield, Edit, Save } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { X, Plus, Filter, Search, MoreHorizontal, Shield, Edit, Save, Bug, Lightbulb, Clock, CheckCircle, AlertCircle, Eye } from "lucide-react";
 import { characters } from "@/data/characters";
 import { defaultGuidelines, type EthicalGuideline } from "@/data/guidelines";
+import { Suggestion } from "@/components/SuggestionsButton";
+import { useToast } from "@/hooks/use-toast";
 
 interface FeatureRequest {
   id: string;
@@ -76,6 +80,13 @@ const additionalPersonas = [
 ];
 
 const Admin = () => {
+  const [firecrawlApiKey, setFirecrawlApiKey] = useState("");
+  const [selectedPersona, setSelectedPersona] = useState("");
+  const [sourceUrl, setSourceUrl] = useState("");
+  const [wikipediaQuery, setWikipediaQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [featureRequests, setFeatureRequests] = useState<FeatureRequest[]>(initialFeatureRequests);
   const [searchPersonas, setSearchPersonas] = useState("");
@@ -86,6 +97,49 @@ const Admin = () => {
   const [editingGuideline, setEditingGuideline] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
+
+  useEffect(() => {
+    // Load suggestions from localStorage
+    const loadedSuggestions = JSON.parse(localStorage.getItem("suggestions") || "[]");
+    setSuggestions(loadedSuggestions);
+  }, []);
+
+  const updateSuggestionStatus = (id: string, status: Suggestion["status"]) => {
+    const updatedSuggestions = suggestions.map(s => 
+      s.id === id ? { ...s, status } : s
+    );
+    setSuggestions(updatedSuggestions);
+    localStorage.setItem("suggestions", JSON.stringify(updatedSuggestions));
+    
+    toast({
+      title: "Status Updated",
+      description: "Suggestion status has been updated.",
+    });
+  };
+
+  const getSuggestionIcon = (type: string) => {
+    return type === "bug" ? <Bug className="w-4 h-4" /> : <Lightbulb className="w-4 h-4" />;
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "new": return <AlertCircle className="w-4 h-4 text-red-500" />;
+      case "reviewed": return <Eye className="w-4 h-4 text-yellow-500" />;
+      case "in-progress": return <Clock className="w-4 h-4 text-blue-500" />;
+      case "resolved": return <CheckCircle className="w-4 h-4 text-green-500" />;
+      default: return <AlertCircle className="w-4 h-4" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "new": return "destructive";
+      case "reviewed": return "secondary";
+      case "in-progress": return "default";
+      case "resolved": return "outline";
+      default: return "secondary";
+    }
+  };
 
   const handleBackToHome = () => {
     navigate("/");
@@ -179,375 +233,240 @@ const Admin = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 overflow-hidden">
-          {/* Feature Requests Section */}
-          <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="w-5 h-5" />
-                Feature Requests
-              </CardTitle>
-              <CardDescription>
-                Manage user feature requests and development priorities
-              </CardDescription>
-              
-              {/* Filter Controls */}
-              <div className="flex gap-2 mt-4">
-                <select 
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 rounded-md border border-input bg-background text-sm"
-                >
-                  <option value="all">All Requests</option>
-                  <option value="pending">Pending</option>
-                  <option value="in-progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="rejected">Rejected</option>
-                </select>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4 flex-1 overflow-hidden flex flex-col">
-              {/* Add New Feature Request */}
-              <div className="p-3 border border-border/50 rounded-lg bg-muted/20">
-                <h4 className="font-semibold mb-2">Add New Request</h4>
-                <div className="space-y-2">
-                  <Input
-                    placeholder="Feature title"
-                    value={newFeatureTitle}
-                    onChange={(e) => setNewFeatureTitle(e.target.value)}
-                  />
-                  <Textarea
-                    placeholder="Feature description"
-                    value={newFeatureDescription}
-                    onChange={(e) => setNewFeatureDescription(e.target.value)}
-                    rows={2}
-                  />
-                  <Button onClick={addFeatureRequest} size="sm" className="w-full">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Request
-                  </Button>
-                </div>
-              </div>
+        <Tabs defaultValue="sources" className="w-full flex-1 flex flex-col">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="sources">Sources Management</TabsTrigger>
+            <TabsTrigger value="suggestions">
+              Suggestions 
+              {suggestions.filter(s => s.status === "new").length > 0 && (
+                <Badge variant="destructive" className="ml-2 px-1 py-0 text-xs">
+                  {suggestions.filter(s => s.status === "new").length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="personas">Persona Library</TabsTrigger>
+          </TabsList>
 
-              {/* Feature Requests List */}
-              <div className="space-y-2 flex-1 overflow-y-auto">
-                {filteredRequests.map((request) => (
-                  <div key={request.id} className="p-3 border border-border/50 rounded-lg">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-sm">{request.title}</h4>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => removeFeatureRequest(request.id)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <X className="w-4 h-4" />
+          <TabsContent value="sources" className="flex-1">
+            <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Search className="w-5 h-5" />
+                  Sources Management
+                </CardTitle>
+                <CardDescription>
+                  Add and manage Wikipedia and web sources for personas
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="flex-1 overflow-hidden flex flex-col">
+                {/* API Key Management */}
+                <div className="mb-4 p-3 border border-border/50 rounded-lg bg-muted/20">
+                  <h4 className="font-semibold mb-2">Firecrawl API Configuration</h4>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Enter Firecrawl API key..."
+                      type="password"
+                      className="flex-1 text-sm"
+                    />
+                    <Button size="sm">
+                      Save Key
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Get your API key from <a href="https://firecrawl.dev" target="_blank" rel="noopener noreferrer" className="underline">firecrawl.dev</a>
+                  </p>
+                </div>
+
+                {/* Add Source Form */}
+                <div className="mb-4 p-3 border border-border/50 rounded-lg bg-muted/20">
+                  <h4 className="font-semibold mb-2">Add New Source</h4>
+                  <div className="space-y-2">
+                    <select className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm">
+                      <option value="">Select Persona...</option>
+                      {characters.map((char) => (
+                        <option key={char.id} value={char.id}>{char.name}</option>
+                      ))}
+                    </select>
+                    <Input
+                      placeholder="Wikipedia search term or full URL..."
+                      className="text-sm"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" className="flex-1">
+                        Scrape Wikipedia
+                      </Button>
+                      <Button size="sm" variant="outline" className="flex-1">
+                        Scrape URL
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground mb-2">{request.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex gap-2">
-                        <Badge variant={getStatusBadgeVariant(request.status)} className="text-xs">
-                          {request.status}
-                        </Badge>
-                        <Badge variant={getPriorityBadgeVariant(request.priority)} className="text-xs">
-                          {request.priority}
-                        </Badge>
+                  </div>
+                </div>
+
+                {/* Existing Sources */}
+                <div className="flex-1 overflow-y-auto">
+                  <h4 className="font-semibold mb-3">Existing Sources</h4>
+                  <div className="space-y-2">
+                    {characters.map((character) => (
+                      <div key={character.id} className="p-3 border border-border/50 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="font-medium text-sm">{character.name}</h5>
+                          <Badge variant="outline" className="text-xs">
+                            {character.sources?.length || 0} sources
+                          </Badge>
+                        </div>
+                        {character.sources && character.sources.length > 0 ? (
+                          <div className="space-y-1">
+                            {character.sources.slice(0, 2).map((source) => (
+                              <div key={source.id} className="flex items-center justify-between text-xs">
+                                <span className="text-muted-foreground truncate">
+                                  {source.title}
+                                </span>
+                                <div className="flex gap-1">
+                                  <Badge variant="outline" className="text-xs">
+                                    {source.type}
+                                  </Badge>
+                                  <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
+                                    <MoreHorizontal className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                            {character.sources.length > 2 && (
+                              <p className="text-xs text-muted-foreground">
+                                +{character.sources.length - 2} more sources
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">No sources added</p>
+                        )}
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {request.votes} votes
-                      </span>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="suggestions" className="flex-1">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle>User Suggestions</CardTitle>
+                <CardDescription>
+                  Bug reports and feature requests from users
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-hidden">
+                <ScrollArea className="h-full w-full">
+                  {suggestions.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No suggestions yet. Users can submit feedback using the suggestion button on any page.
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Ethical Guidelines Management Section */}
-          <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                Ethical Guidelines
-              </CardTitle>
-              <CardDescription>
-                Manage AI conversation safety filters and ethical guidelines
-              </CardDescription>
-            </CardHeader>
-            
-            <CardContent className="flex-1 overflow-hidden flex flex-col">
-              <div className="flex-1 overflow-y-auto space-y-4">
-                {/* Prohibited Guidelines */}
-                <div>
-                  <h4 className="font-semibold mb-3 text-destructive">🛑 Prohibited Content</h4>
-                  <div className="space-y-2">
-                    {guidelines.filter(g => g.category === "prohibited").map((guideline) => (
-                      <div key={guideline.id} className="p-3 border border-destructive/20 rounded-lg">
-                        {editingGuideline === guideline.id ? (
-                          <div className="space-y-2">
-                            <Input
-                              value={editTitle}
-                              onChange={(e) => setEditTitle(e.target.value)}
-                              className="text-sm"
-                            />
-                            <Textarea
-                              value={editDescription}
-                              onChange={(e) => setEditDescription(e.target.value)}
-                              className="text-xs"
-                              rows={2}
-                            />
-                            <div className="flex gap-2">
-                              <Button size="sm" onClick={handleSaveGuideline}>
-                                <Save className="w-3 h-3 mr-1" />
-                                Save
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                Cancel
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h5 className="font-medium text-sm">{guideline.title}</h5>
-                              <p className="text-xs text-muted-foreground">{guideline.description}</p>
-                            </div>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => handleEditGuideline(guideline)}
-                              className="h-6 w-6 p-0"
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Encouraged Guidelines */}
-                <div>
-                  <h4 className="font-semibold mb-3 text-green-600">✅ Encouraged Content</h4>
-                  <div className="space-y-2">
-                    {guidelines.filter(g => g.category === "encouraged").map((guideline) => (
-                      <div key={guideline.id} className="p-3 border border-green-200 rounded-lg">
-                        {editingGuideline === guideline.id ? (
-                          <div className="space-y-2">
-                            <Input
-                              value={editTitle}
-                              onChange={(e) => setEditTitle(e.target.value)}
-                              className="text-sm"
-                            />
-                            <Textarea
-                              value={editDescription}
-                              onChange={(e) => setEditDescription(e.target.value)}
-                              className="text-xs"
-                              rows={2}
-                            />
-                            <div className="flex gap-2">
-                              <Button size="sm" onClick={handleSaveGuideline}>
-                                <Save className="w-3 h-3 mr-1" />
-                                Save
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                Cancel
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h5 className="font-medium text-sm">{guideline.title}</h5>
-                              <p className="text-xs text-muted-foreground">{guideline.description}</p>
-                            </div>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => handleEditGuideline(guideline)}
-                              className="h-6 w-6 p-0"
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Sources Management Section */}
-          <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Search className="w-5 h-5" />
-                Sources Management
-              </CardTitle>
-              <CardDescription>
-                Add and manage Wikipedia and web sources for personas
-              </CardDescription>
-            </CardHeader>
-            
-            <CardContent className="flex-1 overflow-hidden flex flex-col">
-              {/* API Key Management */}
-              <div className="mb-4 p-3 border border-border/50 rounded-lg bg-muted/20">
-                <h4 className="font-semibold mb-2">Firecrawl API Configuration</h4>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Enter Firecrawl API key..."
-                    type="password"
-                    className="flex-1 text-sm"
-                  />
-                  <Button size="sm">
-                    Save Key
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Get your API key from <a href="https://firecrawl.dev" target="_blank" rel="noopener noreferrer" className="underline">firecrawl.dev</a>
-                </p>
-              </div>
-
-              {/* Add Source Form */}
-              <div className="mb-4 p-3 border border-border/50 rounded-lg bg-muted/20">
-                <h4 className="font-semibold mb-2">Add New Source</h4>
-                <div className="space-y-2">
-                  <select className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm">
-                    <option value="">Select Persona...</option>
-                    {characters.map((char) => (
-                      <option key={char.id} value={char.id}>{char.name}</option>
-                    ))}
-                  </select>
-                  <Input
-                    placeholder="Wikipedia search term or full URL..."
-                    className="text-sm"
-                  />
-                  <div className="flex gap-2">
-                    <Button size="sm" className="flex-1">
-                      Scrape Wikipedia
-                    </Button>
-                    <Button size="sm" variant="outline" className="flex-1">
-                      Scrape URL
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Existing Sources */}
-              <div className="flex-1 overflow-y-auto">
-                <h4 className="font-semibold mb-3">Existing Sources</h4>
-                <div className="space-y-2">
-                  {characters.map((character) => (
-                    <div key={character.id} className="p-3 border border-border/50 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <h5 className="font-medium text-sm">{character.name}</h5>
-                        <Badge variant="outline" className="text-xs">
-                          {character.sources?.length || 0} sources
-                        </Badge>
-                      </div>
-                      {character.sources && character.sources.length > 0 ? (
-                        <div className="space-y-1">
-                          {character.sources.slice(0, 2).map((source) => (
-                            <div key={source.id} className="flex items-center justify-between text-xs">
-                              <span className="text-muted-foreground truncate">
-                                {source.title}
-                              </span>
-                              <div className="flex gap-1">
-                                <Badge variant="outline" className="text-xs">
-                                  {source.type}
-                                </Badge>
-                                <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
-                                  <MoreHorizontal className="w-3 h-3" />
-                                </Button>
+                  ) : (
+                    <div className="space-y-4">
+                      {suggestions.map((suggestion) => (
+                        <Card key={suggestion.id} className="w-full">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 space-y-2">
+                                <div className="flex items-center gap-2">
+                                  {getSuggestionIcon(suggestion.type)}
+                                  <h4 className="font-semibold">{suggestion.title}</h4>
+                                  <Badge variant={suggestion.type === "bug" ? "destructive" : "default"}>
+                                    {suggestion.type === "bug" ? "🐛 Bug" : "💡 Feature"}
+                                  </Badge>
+                                </div>
+                                
+                                <p className="text-sm text-muted-foreground">
+                                  {suggestion.description}
+                                </p>
+                                
+                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                  <span>Page: {suggestion.page}</span>
+                                  <span>•</span>
+                                  <span>{new Date(suggestion.timestamp).toLocaleDateString()}</span>
+                                </div>
+                              </div>
+                              
+                              <div className="flex flex-col items-end gap-2">
+                                <div className="flex items-center gap-1">
+                                  {getStatusIcon(suggestion.status)}
+                                  <Badge variant={getStatusColor(suggestion.status) as any}>
+                                    {suggestion.status}
+                                  </Badge>
+                                </div>
+                                
+                                <div className="flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => updateSuggestionStatus(suggestion.id, "reviewed")}
+                                    disabled={suggestion.status === "resolved"}
+                                  >
+                                    Review
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => updateSuggestionStatus(suggestion.id, "resolved")}
+                                  >
+                                    Resolve
+                                  </Button>
+                                </div>
                               </div>
                             </div>
-                          ))}
-                          {character.sources.length > 2 && (
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="personas" className="flex-1">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle>Persona Library</CardTitle>
+                <CardDescription>
+                  Manage historical figures and conversation personas
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-hidden">
+                <div className="space-y-4 h-full flex flex-col">
+                  <Input
+                    placeholder="Search personas..."
+                    value={searchPersonas}
+                    onChange={(e) => setSearchPersonas(e.target.value)}
+                  />
+                  
+                  <ScrollArea className="flex-1">
+                    <div className="space-y-2">
+                      {filteredPersonas.map((persona, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 border border-border/50 rounded-lg">
+                          <div className="flex-1">
+                            <h5 className="font-medium text-sm">{persona.name}</h5>
                             <p className="text-xs text-muted-foreground">
-                              +{character.sources.length - 2} more sources
+                              {persona.category || (persona as any).title}
                             </p>
-                          )}
+                          </div>
+                          <Badge 
+                            variant={(persona as any).status === "active" ? "default" : "outline"} 
+                            className="text-xs"
+                          >
+                            {(persona as any).status || "active"}
+                          </Badge>
                         </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground">No sources added</p>
-                      )}
+                      ))}
                     </div>
-                  ))}
+                  </ScrollArea>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Persona Library Section */}
-          <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Search className="w-5 h-5" />
-                Persona Library
-              </CardTitle>
-              <CardDescription>
-                Manage historical figures and conversation personas
-              </CardDescription>
-              
-              {/* Search */}
-              <div className="mt-4">
-                <Input
-                  placeholder="Search personas..."
-                  value={searchPersonas}
-                  onChange={(e) => setSearchPersonas(e.target.value)}
-                  className="w-full"
-                />
-              </div>
-            </CardHeader>
-            
-            <CardContent className="flex-1 overflow-hidden flex flex-col">
-              <div className="mb-4">
-                <h4 className="font-semibold mb-3">Resources</h4>
-                <div className="space-y-2 flex-1 overflow-y-auto">
-                  {filteredPersonas.map((persona, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 border border-border/50 rounded-lg">
-                      <div className="flex-1">
-                        <h5 className="font-medium text-sm">{persona.name}</h5>
-                        <p className="text-xs text-muted-foreground">
-                          {persona.category || (persona as any).title}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge 
-                          variant={(persona as any).status === "active" ? "default" : "outline"} 
-                          className="text-xs"
-                        >
-                          {(persona as any).status || "active"}
-                        </Badge>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Management Actions */}
-              <div className="border-t border-border/20 pt-3 mt-auto">
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Persona
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
-                    Import Data
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

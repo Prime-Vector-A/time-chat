@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { characterCategories, getCharactersByCategory, type Character } from "@/data/characters";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import SuggestionsButton from "@/components/SuggestionsButton";
 
 const Personas = () => {
   const navigate = useNavigate();
@@ -75,6 +76,8 @@ const Personas = () => {
           ))}
         </div>
       </div>
+
+      <SuggestionsButton currentPage={`Personas - ${categoryInfo?.name || 'Unknown'}`} />
     </div>
   );
 };

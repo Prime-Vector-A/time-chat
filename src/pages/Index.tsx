@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { X, MessageCircle, Menu, Shield, Info } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
+import SuggestionsButton from "@/components/SuggestionsButton";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -116,6 +117,8 @@ const Index = () => {
           ))}
         </div>
       </div>
+
+      <SuggestionsButton currentPage="Home" />
 
       {/* Feedback Button */}
       <Button

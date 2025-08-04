@@ -19,6 +19,7 @@ import {
   Shield
 } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
+import SuggestionsButton from "@/components/SuggestionsButton";
 
 interface Message {
   id: string;
@@ -349,6 +350,8 @@ const Conversation = () => {
           </div>
         </div>
       </div>
+
+      <SuggestionsButton currentPage={`Conversation - ${character.name}`} />
 
       {/* Feedback Button */}
       <Button

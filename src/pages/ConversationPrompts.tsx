@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, BookOpen, Heart, Lightbulb, Users, MessageCircle, FileText, Menu, Shield } from "lucide-react";
 import EthicalGuidelines from "@/components/EthicalGuidelines";
+import SuggestionsButton from "@/components/SuggestionsButton";
 
 const ConversationPrompts = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -193,6 +194,8 @@ const ConversationPrompts = () => {
       >
         <MessageCircle className="w-5 h-5" />
       </Button>
+
+      <SuggestionsButton currentPage={`Conversation Prompts - ${character.name}`} />
 
       {/* Ethical Guidelines Modal */}
       <EthicalGuidelines 
