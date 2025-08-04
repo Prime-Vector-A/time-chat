@@ -158,9 +158,9 @@ const Conversation = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-classical flex">
+    <div className="h-screen bg-gradient-classical flex overflow-hidden">
       {/* Sidebar */}
-      <div className="w-80 bg-card/95 backdrop-blur-sm border-r border-border/50 p-4">
+      <div className="w-80 bg-card/95 backdrop-blur-sm border-r border-border/50 p-4 flex flex-col h-full">
         <div className="flex items-center gap-2 mb-6">
           <Button variant="outline" size="sm" onClick={handleBackToPrompts}>
             <ArrowLeft className="w-4 h-4" />
@@ -175,7 +175,8 @@ const Conversation = () => {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto">
+          <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm">Saved Threads</h3>
             <Button variant="ghost" size="sm" onClick={handleNewThread}>
@@ -212,7 +213,10 @@ const Conversation = () => {
               </Button>
             ))}
           </div>
+          </div>
+        </div>
 
+        <div className="mt-4">
           <Button 
             variant="destructive" 
             size="sm" 
@@ -226,9 +230,9 @@ const Conversation = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col h-full">
         {/* Chat Header */}
-        <div className="p-4 border-b border-border/50 bg-card/95 backdrop-blur-sm">
+        <div className="p-4 border-b border-border/50 bg-card/95 backdrop-blur-sm flex-shrink-0">
           <div className="flex items-center gap-3">
             <img 
               src={character.image} 
@@ -246,7 +250,7 @@ const Conversation = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[80%] ${message.role === 'user' ? 'order-2' : 'order-1'}`}>
@@ -287,7 +291,7 @@ const Conversation = () => {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 border-t border-border/50 bg-card/95 backdrop-blur-sm">
+        <div className="p-4 border-t border-border/50 bg-card/95 backdrop-blur-sm flex-shrink-0">
           <div className="flex items-center gap-2">
             <Input
               value={inputValue}
