@@ -4,17 +4,24 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { MessageSquare, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { characters } from "@/data/characters";
 
 export interface Suggestion {
   id: string;
-  type: "bug" | "feature";
+  type: "bug" | "feature" | "source";
   title: string;
   description: string;
   page: string;
   timestamp: Date;
   status: "new" | "reviewed" | "in-progress" | "resolved";
+  // Source-specific fields
+  personaId?: string;
+  personaName?: string;
+  sourceUrl?: string;
+  sourceTitle?: string;
 }
 
 interface SuggestionsButtonProps {
@@ -23,9 +30,12 @@ interface SuggestionsButtonProps {
 
 const SuggestionsButton = ({ currentPage }: SuggestionsButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [type, setType] = useState<"bug" | "feature">("feature");
+  const [type, setType] = useState<"bug" | "feature" | "source">("feature");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [personaId, setPersonaId] = useState("");
+  const [sourceUrl, setSourceUrl] = useState("");
+  const [sourceTitle, setSourceTitle] = useState("");
   const { toast } = useToast();
 
   const handleSubmit = () => {
@@ -38,6 +48,17 @@ const SuggestionsButton = ({ currentPage }: SuggestionsButtonProps) => {
       return;
     }
 
+    if (type === "source" && (!personaId || !sourceUrl.trim())) {
+      toast({
+        title: "Missing Information",
+        description: "Please select a persona and provide a source URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const selectedPersona = characters.find(char => char.id === personaId);
+    
     const suggestion: Suggestion = {
       id: Date.now().toString(),
       type,
@@ -45,7 +66,13 @@ const SuggestionsButton = ({ currentPage }: SuggestionsButtonProps) => {
       description: description.trim(),
       page: currentPage,
       timestamp: new Date(),
-      status: "new"
+      status: "new",
+      ...(type === "source" && {
+        personaId,
+        personaName: selectedPersona?.name,
+        sourceUrl: sourceUrl.trim(),
+        sourceTitle: sourceTitle.trim() || "Untitled Source"
+      })
     };
 
     // Get existing suggestions from localStorage
@@ -61,6 +88,9 @@ const SuggestionsButton = ({ currentPage }: SuggestionsButtonProps) => {
     // Reset form
     setTitle("");
     setDescription("");
+    setPersonaId("");
+    setSourceUrl("");
+    setSourceTitle("");
     setType("feature");
     setIsOpen(false);
   };
@@ -82,20 +112,21 @@ const SuggestionsButton = ({ currentPage }: SuggestionsButtonProps) => {
           <DialogHeader>
             <DialogTitle>Submit a Suggestion</DialogTitle>
             <DialogDescription>
-              Help us improve by reporting bugs or suggesting new features.
+              Help us improve by reporting bugs, suggesting new features, or recommending sources for personas.
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4">
             <div>
               <Label htmlFor="type">Type</Label>
-              <Select value={type} onValueChange={(value: "bug" | "feature") => setType(value)}>
+              <Select value={type} onValueChange={(value: "bug" | "feature" | "source") => setType(value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="bug">🐛 Bug Report</SelectItem>
                   <SelectItem value="feature">💡 Feature Request</SelectItem>
+                  <SelectItem value="source">📚 Source Suggestion</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -112,11 +143,59 @@ const SuggestionsButton = ({ currentPage }: SuggestionsButtonProps) => {
               />
             </div>
 
+            {type === "source" && (
+              <>
+                <div>
+                  <Label htmlFor="persona">Select Persona</Label>
+                  <Select value={personaId} onValueChange={setPersonaId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a persona..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {characters.map((char) => (
+                        <SelectItem key={char.id} value={char.id}>
+                          {char.name} - {char.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="sourceUrl">Source URL</Label>
+                  <Input
+                    id="sourceUrl"
+                    type="url"
+                    placeholder="https://example.com/article"
+                    value={sourceUrl}
+                    onChange={(e) => setSourceUrl(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="sourceTitle">Source Title (Optional)</Label>
+                  <Input
+                    id="sourceTitle"
+                    type="text"
+                    placeholder="Article or source title"
+                    value={sourceTitle}
+                    onChange={(e) => setSourceTitle(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">
+                {type === "source" ? "Why is this source relevant?" : "Description"}
+              </Label>
               <Textarea
                 id="description"
-                placeholder="Provide more details about your suggestion or bug report"
+                placeholder={
+                  type === "source" 
+                    ? "Explain why this source would be valuable for the selected persona"
+                    : "Provide more details about your suggestion or bug report"
+                }
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}

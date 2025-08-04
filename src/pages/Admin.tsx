@@ -118,7 +118,11 @@ const Admin = () => {
   };
 
   const getSuggestionIcon = (type: string) => {
-    return type === "bug" ? <Bug className="w-4 h-4" /> : <Lightbulb className="w-4 h-4" />;
+    switch (type) {
+      case "bug": return <Bug className="w-4 h-4" />;
+      case "source": return <Search className="w-4 h-4" />;
+      default: return <Lightbulb className="w-4 h-4" />;
+    }
   };
 
   const getStatusIcon = (status: string) => {
@@ -373,14 +377,42 @@ const Admin = () => {
                                 <div className="flex items-center gap-2">
                                   {getSuggestionIcon(suggestion.type)}
                                   <h4 className="font-semibold">{suggestion.title}</h4>
-                                  <Badge variant={suggestion.type === "bug" ? "destructive" : "default"}>
-                                    {suggestion.type === "bug" ? "🐛 Bug" : "💡 Feature"}
+                                  <Badge variant={
+                                    suggestion.type === "bug" ? "destructive" : 
+                                    suggestion.type === "source" ? "secondary" : "default"
+                                  }>
+                                    {suggestion.type === "bug" ? "🐛 Bug" : 
+                                     suggestion.type === "source" ? "📚 Source" : "💡 Feature"}
                                   </Badge>
                                 </div>
                                 
                                 <p className="text-sm text-muted-foreground">
                                   {suggestion.description}
                                 </p>
+                                
+                                {suggestion.type === "source" && (
+                                  <div className="mt-2 p-2 bg-muted/50 rounded-md space-y-1">
+                                    <div className="text-xs">
+                                      <span className="font-medium">Persona:</span> {suggestion.personaName}
+                                    </div>
+                                    <div className="text-xs">
+                                      <span className="font-medium">URL:</span>{" "}
+                                      <a 
+                                        href={suggestion.sourceUrl} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline break-all"
+                                      >
+                                        {suggestion.sourceUrl}
+                                      </a>
+                                    </div>
+                                    {suggestion.sourceTitle && (
+                                      <div className="text-xs">
+                                        <span className="font-medium">Title:</span> {suggestion.sourceTitle}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                                 
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                   <span>Page: {suggestion.page}</span>
@@ -398,21 +430,48 @@ const Admin = () => {
                                 </div>
                                 
                                 <div className="flex gap-1">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => updateSuggestionStatus(suggestion.id, "reviewed")}
-                                    disabled={suggestion.status === "resolved"}
-                                  >
-                                    Review
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => updateSuggestionStatus(suggestion.id, "resolved")}
-                                  >
-                                    Resolve
-                                  </Button>
+                                  {suggestion.type === "source" ? (
+                                    <>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => {
+                                          // Auto-populate the source form in the Sources tab
+                                          setSelectedPersona(suggestion.personaId || "");
+                                          setSourceUrl(suggestion.sourceUrl || "");
+                                          updateSuggestionStatus(suggestion.id, "in-progress");
+                                        }}
+                                        disabled={suggestion.status === "resolved"}
+                                      >
+                                        Add Source
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => updateSuggestionStatus(suggestion.id, "resolved")}
+                                      >
+                                        Resolve
+                                      </Button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => updateSuggestionStatus(suggestion.id, "reviewed")}
+                                        disabled={suggestion.status === "resolved"}
+                                      >
+                                        Review
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => updateSuggestionStatus(suggestion.id, "resolved")}
+                                      >
+                                        Resolve
+                                      </Button>
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             </div>
