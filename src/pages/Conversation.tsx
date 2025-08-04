@@ -14,8 +14,11 @@ import {
   Trash2, 
   Flag,
   Plus,
-  MoreVertical
+  MoreVertical,
+  Menu,
+  Shield
 } from "lucide-react";
+import EthicalGuidelines from "@/components/EthicalGuidelines";
 
 interface Message {
   id: string;
@@ -40,6 +43,8 @@ const Conversation = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showGuidelines, setShowGuidelines] = useState(false);
   const [threads, setThreads] = useState<Thread[]>([
     {
       id: "1",
@@ -157,6 +162,11 @@ const Conversation = () => {
     console.log("Feedback clicked");
   };
 
+  const handleShowGuidelines = () => {
+    setShowGuidelines(true);
+    setShowMenu(false);
+  };
+
   return (
     <div className="h-screen bg-gradient-classical flex overflow-hidden">
       {/* Sidebar */}
@@ -232,20 +242,46 @@ const Conversation = () => {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col h-full">
         {/* Chat Header */}
-        <div className="p-4 border-b border-border/50 bg-card/95 backdrop-blur-sm flex-shrink-0">
+        <div className="p-4 border-b border-border/50 bg-card/95 backdrop-blur-sm flex-shrink-0 relative">
           <div className="flex items-center gap-3">
             <img 
               src={character.image} 
               alt={character.name}
               className="w-10 h-10 rounded-full object-cover border-2 border-primary/20"
             />
-            <div>
+            <div className="flex-1">
               <h2 className="font-semibold">{character.name}</h2>
               <p className="text-sm text-muted-foreground">{character.title}</p>
             </div>
-            <Badge variant="secondary" className="ml-auto">
+            <Badge variant="secondary" className="mr-2">
               {promptType ? promptType.charAt(0).toUpperCase() + promptType.slice(1) : "General"}
             </Badge>
+            
+            {/* Hamburger Menu */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowMenu(!showMenu)}
+              className="h-8 w-8 p-0"
+            >
+              <Menu className="w-4 h-4" />
+            </Button>
+            
+            {showMenu && (
+              <Card className="absolute top-16 right-4 w-48 bg-card/95 backdrop-blur-sm border-border/50 shadow-lg z-10">
+                <CardContent className="p-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleShowGuidelines}
+                    className="w-full justify-start"
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    Safety Guidelines
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
@@ -322,6 +358,12 @@ const Conversation = () => {
       >
         <MessageCircle className="w-5 h-5" />
       </Button>
+
+      {/* Ethical Guidelines Modal */}
+      <EthicalGuidelines 
+        isOpen={showGuidelines} 
+        onClose={() => setShowGuidelines(false)} 
+      />
     </div>
   );
 };

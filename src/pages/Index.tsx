@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { characters } from "@/data/characters";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { X, MessageCircle } from "lucide-react";
+import { X, MessageCircle, Menu, Shield } from "lucide-react";
+import EthicalGuidelines from "@/components/EthicalGuidelines";
 
 const Index = () => {
   const navigate = useNavigate();
   const [showPurpose, setShowPurpose] = useState(true);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showGuidelines, setShowGuidelines] = useState(false);
 
   const handlePersonaSelect = (characterId: string) => {
     navigate(`/prompts/${characterId}`);
@@ -18,8 +21,12 @@ const Index = () => {
   };
 
   const handleFeedback = () => {
-    // TODO: Implement feedback functionality
     console.log("Feedback clicked");
+  };
+
+  const handleShowGuidelines = () => {
+    setShowGuidelines(true);
+    setShowMenu(false);
   };
 
   return (
@@ -31,6 +38,34 @@ const Index = () => {
         title="Admin Access"
       >
         <div className="w-full h-full bg-primary/20 rounded"></div>
+      </div>
+
+      {/* Hamburger Menu */}
+      <div className="absolute top-4 right-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowMenu(!showMenu)}
+          className="h-10 w-10 p-0"
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
+        
+        {showMenu && (
+          <Card className="absolute top-12 right-0 w-48 bg-card/95 backdrop-blur-sm border-border/50 shadow-lg z-10">
+            <CardContent className="p-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShowGuidelines}
+                className="w-full justify-start"
+              >
+                <Shield className="w-4 h-4 mr-2" />
+                Safety Guidelines
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Header */}
@@ -103,6 +138,12 @@ const Index = () => {
       >
         <MessageCircle className="w-5 h-5" />
       </Button>
+
+      {/* Ethical Guidelines Modal */}
+      <EthicalGuidelines 
+        isOpen={showGuidelines} 
+        onClose={() => setShowGuidelines(false)} 
+      />
     </div>
   );
 };

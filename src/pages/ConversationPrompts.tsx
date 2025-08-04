@@ -1,10 +1,14 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCharacterById } from "@/data/characters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, BookOpen, Heart, Lightbulb, Users, MessageCircle, FileText } from "lucide-react";
+import { ArrowLeft, BookOpen, Heart, Lightbulb, Users, MessageCircle, FileText, Menu, Shield } from "lucide-react";
+import EthicalGuidelines from "@/components/EthicalGuidelines";
 
 const ConversationPrompts = () => {
+  const [showMenu, setShowMenu] = useState(false);
+  const [showGuidelines, setShowGuidelines] = useState(false);
   const navigate = useNavigate();
   const { characterId } = useParams<{ characterId: string }>();
   
@@ -34,8 +38,12 @@ const ConversationPrompts = () => {
   };
 
   const handleFeedback = () => {
-    // TODO: Implement feedback functionality
     console.log("Feedback clicked");
+  };
+
+  const handleShowGuidelines = () => {
+    setShowGuidelines(true);
+    setShowMenu(false);
   };
 
   const conversationPrompts = [
@@ -71,7 +79,35 @@ const ConversationPrompts = () => {
 
   return (
     <div className="h-screen bg-gradient-classical p-4 overflow-hidden flex flex-col">
-      <div className="max-w-2xl mx-auto flex flex-col h-full">
+      <div className="max-w-2xl mx-auto flex flex-col h-full relative">
+        {/* Hamburger Menu */}
+        <div className="absolute top-0 right-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowMenu(!showMenu)}
+            className="h-10 w-10 p-0"
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+          
+          {showMenu && (
+            <Card className="absolute top-12 right-0 w-48 bg-card/95 backdrop-blur-sm border-border/50 shadow-lg z-10">
+              <CardContent className="p-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleShowGuidelines}
+                  className="w-full justify-start"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Safety Guidelines
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
         {/* Navigation */}
         <div className="flex items-center gap-4 mb-4">
           <Button variant="outline" onClick={handleBackToHome}>
@@ -158,6 +194,12 @@ const ConversationPrompts = () => {
       >
         <MessageCircle className="w-5 h-5" />
       </Button>
+
+      {/* Ethical Guidelines Modal */}
+      <EthicalGuidelines 
+        isOpen={showGuidelines} 
+        onClose={() => setShowGuidelines(false)} 
+      />
     </div>
   );
 };

@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { X, Plus, Filter, Search, MoreHorizontal } from "lucide-react";
+import { X, Plus, Filter, Search, MoreHorizontal, Shield, Edit, Save } from "lucide-react";
 import { characters } from "@/data/characters";
+import { defaultGuidelines, type EthicalGuideline } from "@/data/guidelines";
 
 interface FeatureRequest {
   id: string;
@@ -81,6 +82,10 @@ const Admin = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [newFeatureTitle, setNewFeatureTitle] = useState("");
   const [newFeatureDescription, setNewFeatureDescription] = useState("");
+  const [guidelines, setGuidelines] = useState<EthicalGuideline[]>(defaultGuidelines);
+  const [editingGuideline, setEditingGuideline] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
 
   const handleBackToHome = () => {
     navigate("/");
@@ -103,6 +108,31 @@ const Admin = () => {
       case "low": return "outline";
       default: return "outline";
     }
+  };
+
+  const handleEditGuideline = (guideline: EthicalGuideline) => {
+    setEditingGuideline(guideline.id);
+    setEditTitle(guideline.title);
+    setEditDescription(guideline.description);
+  };
+
+  const handleSaveGuideline = () => {
+    if (editingGuideline) {
+      setGuidelines(prev => prev.map(g => 
+        g.id === editingGuideline 
+          ? { ...g, title: editTitle, description: editDescription }
+          : g
+      ));
+      setEditingGuideline(null);
+      setEditTitle("");
+      setEditDescription("");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingGuideline(null);
+    setEditTitle("");
+    setEditDescription("");
   };
 
   const filteredRequests = featureRequests.filter(request => 
@@ -149,7 +179,7 @@ const Admin = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 overflow-hidden">
           {/* Feature Requests Section */}
           <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
             <CardHeader>
@@ -231,6 +261,123 @@ const Admin = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Ethical Guidelines Management Section */}
+          <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="w-5 h-5" />
+                Ethical Guidelines
+              </CardTitle>
+              <CardDescription>
+                Manage AI conversation safety filters and ethical guidelines
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="flex-1 overflow-hidden flex flex-col">
+              <div className="flex-1 overflow-y-auto space-y-4">
+                {/* Prohibited Guidelines */}
+                <div>
+                  <h4 className="font-semibold mb-3 text-destructive">🛑 Prohibited Content</h4>
+                  <div className="space-y-2">
+                    {guidelines.filter(g => g.category === "prohibited").map((guideline) => (
+                      <div key={guideline.id} className="p-3 border border-destructive/20 rounded-lg">
+                        {editingGuideline === guideline.id ? (
+                          <div className="space-y-2">
+                            <Input
+                              value={editTitle}
+                              onChange={(e) => setEditTitle(e.target.value)}
+                              className="text-sm"
+                            />
+                            <Textarea
+                              value={editDescription}
+                              onChange={(e) => setEditDescription(e.target.value)}
+                              className="text-xs"
+                              rows={2}
+                            />
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={handleSaveGuideline}>
+                                <Save className="w-3 h-3 mr-1" />
+                                Save
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h5 className="font-medium text-sm">{guideline.title}</h5>
+                              <p className="text-xs text-muted-foreground">{guideline.description}</p>
+                            </div>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleEditGuideline(guideline)}
+                              className="h-6 w-6 p-0"
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Encouraged Guidelines */}
+                <div>
+                  <h4 className="font-semibold mb-3 text-green-600">✅ Encouraged Content</h4>
+                  <div className="space-y-2">
+                    {guidelines.filter(g => g.category === "encouraged").map((guideline) => (
+                      <div key={guideline.id} className="p-3 border border-green-200 rounded-lg">
+                        {editingGuideline === guideline.id ? (
+                          <div className="space-y-2">
+                            <Input
+                              value={editTitle}
+                              onChange={(e) => setEditTitle(e.target.value)}
+                              className="text-sm"
+                            />
+                            <Textarea
+                              value={editDescription}
+                              onChange={(e) => setEditDescription(e.target.value)}
+                              className="text-xs"
+                              rows={2}
+                            />
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={handleSaveGuideline}>
+                                <Save className="w-3 h-3 mr-1" />
+                                Save
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h5 className="font-medium text-sm">{guideline.title}</h5>
+                              <p className="text-xs text-muted-foreground">{guideline.description}</p>
+                            </div>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleEditGuideline(guideline)}
+                              className="h-6 w-6 p-0"
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
