@@ -181,19 +181,19 @@ const ConversationPrompts = () => {
         </div>
 
         {/* Conversation Prompts */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           {conversationPrompts.map((prompt) => (
             <Card 
               key={prompt.id}
               className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50"
               onClick={() => handlePromptSelect(prompt.id)}
             >
-              <CardContent className="p-4 text-center">
-                <div className={`w-12 h-12 rounded-full ${prompt.color} border-2 flex items-center justify-center mx-auto mb-3`}>
-                  <prompt.icon className="w-6 h-6" />
+              <CardContent className="p-3 text-center">
+                <div className={`w-8 h-8 rounded-full ${prompt.color} border-2 flex items-center justify-center mx-auto mb-2`}>
+                  <prompt.icon className="w-4 h-4" />
                 </div>
-                <h3 className="font-semibold text-base mb-1">{prompt.title}</h3>
-                <p className="text-sm text-muted-foreground">{prompt.description}</p>
+                <h3 className="font-semibold text-sm mb-1">{prompt.title}</h3>
+                <p className="text-xs text-muted-foreground leading-tight">{prompt.description}</p>
               </CardContent>
             </Card>
           ))}
