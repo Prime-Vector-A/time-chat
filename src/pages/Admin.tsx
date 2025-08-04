@@ -382,6 +382,107 @@ const Admin = () => {
             </CardContent>
           </Card>
 
+          {/* Sources Management Section */}
+          <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="w-5 h-5" />
+                Sources Management
+              </CardTitle>
+              <CardDescription>
+                Add and manage Wikipedia and web sources for personas
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="flex-1 overflow-hidden flex flex-col">
+              {/* API Key Management */}
+              <div className="mb-4 p-3 border border-border/50 rounded-lg bg-muted/20">
+                <h4 className="font-semibold mb-2">Firecrawl API Configuration</h4>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter Firecrawl API key..."
+                    type="password"
+                    className="flex-1 text-sm"
+                  />
+                  <Button size="sm">
+                    Save Key
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Get your API key from <a href="https://firecrawl.dev" target="_blank" rel="noopener noreferrer" className="underline">firecrawl.dev</a>
+                </p>
+              </div>
+
+              {/* Add Source Form */}
+              <div className="mb-4 p-3 border border-border/50 rounded-lg bg-muted/20">
+                <h4 className="font-semibold mb-2">Add New Source</h4>
+                <div className="space-y-2">
+                  <select className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm">
+                    <option value="">Select Persona...</option>
+                    {characters.map((char) => (
+                      <option key={char.id} value={char.id}>{char.name}</option>
+                    ))}
+                  </select>
+                  <Input
+                    placeholder="Wikipedia search term or full URL..."
+                    className="text-sm"
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" className="flex-1">
+                      Scrape Wikipedia
+                    </Button>
+                    <Button size="sm" variant="outline" className="flex-1">
+                      Scrape URL
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Existing Sources */}
+              <div className="flex-1 overflow-y-auto">
+                <h4 className="font-semibold mb-3">Existing Sources</h4>
+                <div className="space-y-2">
+                  {characters.map((character) => (
+                    <div key={character.id} className="p-3 border border-border/50 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium text-sm">{character.name}</h5>
+                        <Badge variant="outline" className="text-xs">
+                          {character.sources?.length || 0} sources
+                        </Badge>
+                      </div>
+                      {character.sources && character.sources.length > 0 ? (
+                        <div className="space-y-1">
+                          {character.sources.slice(0, 2).map((source) => (
+                            <div key={source.id} className="flex items-center justify-between text-xs">
+                              <span className="text-muted-foreground truncate">
+                                {source.title}
+                              </span>
+                              <div className="flex gap-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {source.type}
+                                </Badge>
+                                <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
+                                  <MoreHorizontal className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                          {character.sources.length > 2 && (
+                            <p className="text-xs text-muted-foreground">
+                              +{character.sources.length - 2} more sources
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">No sources added</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Persona Library Section */}
           <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
             <CardHeader>
