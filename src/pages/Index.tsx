@@ -141,7 +141,7 @@ const Index = () => {
           {characters.map((character) => (
             <Card 
               key={character.id}
-              className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50 h-fit"
+              className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50 h-32"
               onClick={() => handlePersonaSelect(character.id)}
             >
               <CardHeader className="text-center p-2 pb-0">

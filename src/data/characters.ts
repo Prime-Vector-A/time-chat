@@ -393,7 +393,7 @@ export const characters: Character[] = [
   {
     id: "mr-rogers",
     name: "Mr. Rogers",
-    title: "Beloved Neighbor",
+    title: "Neighbor and Pastor",
     category: "christian-leaders", 
     description: "Talk with Fred Rogers, the gentle soul who taught generations about kindness and self-worth.",
     image: mrRogersImg,
@@ -1038,8 +1038,8 @@ export const characters: Character[] = [
   },
   {
     id: "anne-frank",
-    name: "Anne Frank",
-    title: "Young Diarist",
+    name: "Anne Frank", 
+    title: "WWII Diarist",
     category: "wwii-heroes",
     description: "Share thoughts with Anne, whose diary revealed hope and humanity amid darkness.",
     image: anneFrankImg,
@@ -1145,7 +1145,7 @@ export const characters: Character[] = [
   },
   {
     id: "wwii-soldier",
-    name: "WWII Soldier",
+    name: "WWI American Soldier",
     title: "Combat Veteran",
     category: "wwii-heroes", 
     description: "Hear firsthand accounts of courage and brotherhood from a soldier who served.",
@@ -1252,7 +1252,7 @@ export const characters: Character[] = [
   },
   {
     id: "child-evacuee",
-    name: "English Child Evacuee", 
+    name: "WWII English Child Evacuee",
     title: "Wartime Child",
     category: "wwii-heroes",
     description: "Experience WWII through the eyes of a child who was evacuated from London during the Blitz.",
