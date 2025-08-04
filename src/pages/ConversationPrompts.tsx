@@ -188,12 +188,14 @@ const ConversationPrompts = () => {
               className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50"
               onClick={() => handlePromptSelect(prompt.id)}
             >
-              <CardContent className="p-3 text-center">
-                <div className={`w-8 h-8 rounded-full ${prompt.color} border-2 flex items-center justify-center mx-auto mb-2`}>
-                  <prompt.icon className="w-4 h-4" />
+              <CardContent className="p-3 flex items-center gap-3">
+                <div className={`w-6 h-6 rounded-full ${prompt.color} border flex items-center justify-center flex-shrink-0`}>
+                  <prompt.icon className="w-3 h-3" />
                 </div>
-                <h3 className="font-semibold text-sm mb-1">{prompt.title}</h3>
-                <p className="text-xs text-muted-foreground leading-tight">{prompt.description}</p>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-sm mb-0.5">{prompt.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-tight">{prompt.description}</p>
+                </div>
               </CardContent>
             </Card>
           ))}
