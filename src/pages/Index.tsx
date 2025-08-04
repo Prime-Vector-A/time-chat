@@ -1,22 +1,30 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { characterCategories } from "@/data/characters";
+import { characters } from "@/data/characters";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { X, MessageCircle } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [showPurpose, setShowPurpose] = useState(true);
 
-  const handleCategorySelect = (categoryId: string) => {
-    navigate(`/personas/${categoryId}`);
+  const handlePersonaSelect = (characterId: string) => {
+    navigate(`/prompts/${characterId}`);
   };
 
   const handleAdminAccess = () => {
     navigate('/admin');
   };
 
+  const handleFeedback = () => {
+    // TODO: Implement feedback functionality
+    console.log("Feedback clicked");
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-classical">
-      {/* Hidden Admin Access - Click logo area */}
+    <div className="min-h-screen bg-gradient-classical p-6">
+      {/* Hidden Admin Access */}
       <div 
         className="absolute top-4 left-4 w-8 h-8 cursor-pointer opacity-0 hover:opacity-30 transition-opacity"
         onClick={handleAdminAccess}
@@ -25,48 +33,77 @@ const Index = () => {
         <div className="w-full h-full bg-primary/20 rounded"></div>
       </div>
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-subtle opacity-50"></div>
-        <div className="relative z-10 max-w-6xl mx-auto px-6 py-24 text-center">
-          <h1 className="text-6xl font-bold text-foreground mb-6">
-            Conversations with
-            <span className="block text-primary">History's Greatest Minds</span>
-          </h1>
-          <p className="text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto">
-            Step into the past and engage in meaningful dialogue with influential figures who shaped our world.
-            Experience their wisdom, perspective, and humanity through voice conversations.
-          </p>
-        </div>
+      {/* Header */}
+      <div className="max-w-7xl mx-auto mb-12 text-center">
+        <h1 className="text-5xl font-bold text-foreground mb-4">
+          Conversations with History
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          Choose a historical figure to begin your conversation
+        </p>
       </div>
 
-      {/* Categories Section */}
-      <div className="max-w-6xl mx-auto px-6 pb-24">
-        <h2 className="text-4xl font-bold text-center text-foreground mb-16">Choose Your Era</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {characterCategories.map((category) => (
+      {/* Persona Grid */}
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-8">
+          {characters.map((character) => (
             <Card 
-              key={category.id}
+              key={character.id}
               className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50"
-              onClick={() => handleCategorySelect(category.id)}
+              onClick={() => handlePersonaSelect(character.id)}
             >
-              <CardHeader className="text-center pb-6">
-                <div className="text-6xl mb-4">{category.icon}</div>
-                <CardTitle className="text-2xl">{category.name}</CardTitle>
-                <CardDescription className="text-lg">{category.description}</CardDescription>
+              <CardHeader className="text-center pb-2 px-4 pt-4">
+                <img 
+                  src={character.image} 
+                  alt={character.name}
+                  className="w-20 h-20 rounded-full mx-auto object-cover border-2 border-primary/20 mb-2"
+                />
+                <CardTitle className="text-sm leading-tight">{character.name}</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground">
+                  {character.title}
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <Button variant="outline" className="w-full">
-                    Explore Characters →
-                  </Button>
-                </div>
-              </CardContent>
             </Card>
           ))}
         </div>
       </div>
+
+      {/* Dismissible Statement of Purpose */}
+      {showPurpose && (
+        <div className="fixed bottom-6 left-6 right-6 max-w-4xl mx-auto">
+          <Card className="bg-card/95 backdrop-blur-sm border-border/50 shadow-elegant">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1 pr-4">
+                  <h3 className="font-semibold mb-2">About Conversations with History</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Experience meaningful dialogue with influential figures who shaped our world. 
+                    Each conversation is powered by advanced AI trained on historical texts, 
+                    personalities, and documented speech patterns to create authentic interactions.
+                  </p>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setShowPurpose(false)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Feedback Button */}
+      <Button
+        onClick={handleFeedback}
+        className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg"
+        size="icon"
+      >
+        <MessageCircle className="w-5 h-5" />
+      </Button>
     </div>
   );
 };
