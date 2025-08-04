@@ -264,55 +264,8 @@ const ConversationPrompts = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <ScrollArea className="max-h-[60vh] w-full">
-            <div className="space-y-4 pr-4">
-              {character.sources && character.sources.length > 0 ? (
-                character.sources.map((source) => (
-                  <Card key={source.id} className="w-full">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <CardTitle className="text-base leading-tight mb-2">
-                            {source.title}
-                          </CardTitle>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="outline" className="text-xs">
-                              {source.type}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              Added {new Date(source.dateAdded).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <p className="text-sm text-muted-foreground mb-3">
-                            {source.description}
-                          </p>
-                          <a 
-                            href={source.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                          >
-                            <ExternalLink className="w-3 h-3" />
-                            View Source
-                          </a>
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                ))
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No sources available for this character yet.</p>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-
-          <Separator className="my-4" />
-
-          {/* Source Suggestion Section */}
-          <div className="space-y-4">
+          {/* Source Suggestion Section - Moved to top */}
+          <div className="space-y-4 mb-6">
             <div>
               <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
                 <Plus className="w-4 h-4" />
@@ -359,6 +312,53 @@ const ConversationPrompts = () => {
               </Button>
             </div>
           </div>
+
+          <Separator className="my-4" />
+
+          <ScrollArea className="max-h-[40vh] w-full">
+            <div className="space-y-4 pr-4">
+              {character.sources && character.sources.length > 0 ? (
+                character.sources.map((source) => (
+                  <Card key={source.id} className="w-full">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <CardTitle className="text-base leading-tight mb-2">
+                            {source.title}
+                          </CardTitle>
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline" className="text-xs">
+                              {source.type}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              Added {new Date(source.dateAdded).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            {source.description}
+                          </p>
+                          <a 
+                            href={source.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            View Source
+                          </a>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No sources available for this character yet.</p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
 
