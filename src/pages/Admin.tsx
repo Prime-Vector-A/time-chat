@@ -411,6 +411,31 @@ const Admin = () => {
                                         <span className="font-medium">Title:</span> {suggestion.sourceTitle}
                                       </div>
                                     )}
+                                    <div className="flex gap-2 mt-2">
+                                      <Button 
+                                        size="sm" 
+                                        variant="default" 
+                                        onClick={() => {
+                                          // Accept source - in a real app, this would add to character sources
+                                          updateSuggestionStatus(suggestion.id, "resolved");
+                                          toast({
+                                            title: "Source Accepted",
+                                            description: "Source has been added to the character's knowledge base.",
+                                          });
+                                        }}
+                                        disabled={suggestion.status === "resolved"}
+                                      >
+                                        Accept Source
+                                      </Button>
+                                      <Button 
+                                        size="sm" 
+                                        variant="outline" 
+                                        onClick={() => updateSuggestionStatus(suggestion.id, "resolved")}
+                                        disabled={suggestion.status === "resolved"}
+                                      >
+                                        Reject
+                                      </Button>
+                                    </div>
                                   </div>
                                 )}
                                 
