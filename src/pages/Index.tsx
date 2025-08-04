@@ -36,10 +36,10 @@ const Index = () => {
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6 text-center">
         <h1 className="text-4xl font-bold text-foreground mb-2">
-          Conversations with History
+          Conversations With Heroes
         </h1>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Choose a historical figure to begin your conversation
+          Choose a heroic figure to begin your conversation
         </p>
       </div>
 
@@ -75,9 +75,9 @@ const Index = () => {
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1 pr-4">
-                  <h3 className="font-semibold mb-1">About Conversations with History</h3>
+                  <h3 className="font-semibold mb-1">About Conversations With Heroes</h3>
                   <p className="text-sm text-muted-foreground">
-                    Experience meaningful dialogue with influential figures who shaped our world. 
+                    Experience meaningful dialogue with heroic figures who shaped our world. 
                     Each conversation is powered by advanced AI trained on historical texts.
                   </p>
                 </div>
