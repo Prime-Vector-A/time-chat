@@ -136,12 +136,12 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-classical p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="h-screen bg-gradient-classical p-4 overflow-hidden flex flex-col">
+      <div className="max-w-7xl mx-auto flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-foreground mb-2">Admin Backend</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-1">Admin Backend</h1>
             <p className="text-muted-foreground">Manage feature requests and persona library</p>
           </div>
           <Button variant="outline" onClick={handleBackToHome}>
@@ -149,9 +149,9 @@ const Admin = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 overflow-hidden">
           {/* Feature Requests Section */}
-          <Card className="bg-card/95 backdrop-blur-sm border-border/50">
+          <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Filter className="w-5 h-5" />
@@ -177,11 +177,11 @@ const Admin = () => {
               </div>
             </CardHeader>
             
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 flex-1 overflow-hidden flex flex-col">
               {/* Add New Feature Request */}
-              <div className="p-4 border border-border/50 rounded-lg bg-muted/20">
-                <h4 className="font-semibold mb-3">Add New Request</h4>
-                <div className="space-y-3">
+              <div className="p-3 border border-border/50 rounded-lg bg-muted/20">
+                <h4 className="font-semibold mb-2">Add New Request</h4>
+                <div className="space-y-2">
                   <Input
                     placeholder="Feature title"
                     value={newFeatureTitle}
@@ -201,9 +201,9 @@ const Admin = () => {
               </div>
 
               {/* Feature Requests List */}
-              <div className="space-y-3 max-h-96 overflow-y-auto">
+              <div className="space-y-2 flex-1 overflow-y-auto">
                 {filteredRequests.map((request) => (
-                  <div key={request.id} className="p-4 border border-border/50 rounded-lg">
+                  <div key={request.id} className="p-3 border border-border/50 rounded-lg">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-semibold text-sm">{request.title}</h4>
                       <Button 
@@ -215,7 +215,7 @@ const Admin = () => {
                         <X className="w-4 h-4" />
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground mb-3">{request.description}</p>
+                    <p className="text-xs text-muted-foreground mb-2">{request.description}</p>
                     <div className="flex items-center justify-between">
                       <div className="flex gap-2">
                         <Badge variant={getStatusBadgeVariant(request.status)} className="text-xs">
@@ -236,7 +236,7 @@ const Admin = () => {
           </Card>
 
           {/* Persona Library Section */}
-          <Card className="bg-card/95 backdrop-blur-sm border-border/50">
+          <Card className="bg-card/95 backdrop-blur-sm border-border/50 flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Search className="w-5 h-5" />
@@ -257,12 +257,12 @@ const Admin = () => {
               </div>
             </CardHeader>
             
-            <CardContent>
-              <div className="mb-6">
-                <h4 className="font-semibold mb-4">Resources</h4>
-                <div className="space-y-2 max-h-80 overflow-y-auto">
+            <CardContent className="flex-1 overflow-hidden flex flex-col">
+              <div className="mb-4">
+                <h4 className="font-semibold mb-3">Resources</h4>
+                <div className="space-y-2 flex-1 overflow-y-auto">
                   {filteredPersonas.map((persona, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border border-border/50 rounded-lg">
+                    <div key={index} className="flex items-center justify-between p-2 border border-border/50 rounded-lg">
                       <div className="flex-1">
                         <h5 className="font-medium text-sm">{persona.name}</h5>
                         <p className="text-xs text-muted-foreground">
@@ -286,7 +286,7 @@ const Admin = () => {
               </div>
 
               {/* Management Actions */}
-              <div className="border-t border-border/20 pt-4">
+              <div className="border-t border-border/20 pt-3 mt-auto">
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="flex-1">
                     <Plus className="w-4 h-4 mr-2" />

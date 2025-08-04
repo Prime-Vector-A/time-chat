@@ -70,10 +70,10 @@ const ConversationPrompts = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-classical p-6">
-      <div className="max-w-2xl mx-auto">
+    <div className="h-screen bg-gradient-classical p-4 overflow-hidden flex flex-col">
+      <div className="max-w-2xl mx-auto flex flex-col h-full">
         {/* Navigation */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-4">
           <Button variant="outline" onClick={handleBackToHome}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Gallery
@@ -81,30 +81,30 @@ const ConversationPrompts = () => {
         </div>
 
         {/* Character Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <img 
             src={character.image} 
             alt={character.name}
-            className="w-32 h-32 rounded-full object-cover border-4 border-primary/20 mx-auto mb-6"
+            className="w-24 h-24 rounded-full object-cover border-4 border-primary/20 mx-auto mb-4"
           />
-          <h1 className="text-4xl font-bold text-foreground mb-2">{character.name}</h1>
-          <p className="text-xl text-muted-foreground">{character.title}</p>
-          <p className="text-sm text-muted-foreground mt-2">{character.personality.era}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-1">{character.name}</h1>
+          <p className="text-lg text-muted-foreground">{character.title}</p>
+          <p className="text-sm text-muted-foreground mt-1">{character.personality.era}</p>
         </div>
 
         {/* Conversation Prompts */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           {conversationPrompts.map((prompt) => (
             <Card 
               key={prompt.id}
               className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50"
               onClick={() => handlePromptSelect(prompt.id)}
             >
-              <CardContent className="p-6 text-center">
-                <div className={`w-16 h-16 rounded-full ${prompt.color} border-2 flex items-center justify-center mx-auto mb-4`}>
-                  <prompt.icon className="w-8 h-8" />
+              <CardContent className="p-4 text-center">
+                <div className={`w-12 h-12 rounded-full ${prompt.color} border-2 flex items-center justify-center mx-auto mb-3`}>
+                  <prompt.icon className="w-6 h-6" />
                 </div>
-                <h3 className="font-semibold text-lg mb-2">{prompt.title}</h3>
+                <h3 className="font-semibold text-base mb-1">{prompt.title}</h3>
                 <p className="text-sm text-muted-foreground">{prompt.description}</p>
               </CardContent>
             </Card>
@@ -112,7 +112,7 @@ const ConversationPrompts = () => {
         </div>
 
         {/* Sources Button */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-4">
           <Button 
             variant="outline" 
             onClick={handleSources}
@@ -124,11 +124,12 @@ const ConversationPrompts = () => {
         </div>
 
         {/* Character Background */}
-        <Card className="bg-card/95 backdrop-blur-sm border-border/50 mb-8">
-          <CardContent className="p-6">
-            <h3 className="font-semibold mb-3">About {character.name}</h3>
-            <p className="text-muted-foreground text-sm mb-4">{character.description}</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className="flex-1 overflow-y-auto">
+          <Card className="bg-card/95 backdrop-blur-sm border-border/50">
+            <CardContent className="p-4">
+              <h3 className="font-semibold mb-2">About {character.name}</h3>
+              <p className="text-muted-foreground text-sm mb-3">{character.description}</p>
+            <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <h4 className="font-medium mb-2">Core Values</h4>
                 <div className="flex flex-wrap gap-1">
@@ -143,15 +144,16 @@ const ConversationPrompts = () => {
                 <h4 className="font-medium mb-2">Speaking Style</h4>
                 <p className="text-muted-foreground text-xs">{character.personality.tone}</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Feedback Button */}
       <Button
         onClick={handleFeedback}
-        className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg"
+        className="fixed bottom-4 right-4 h-10 w-10 rounded-full shadow-lg"
         size="icon"
       >
         <MessageCircle className="w-5 h-5" />

@@ -30,43 +30,43 @@ const Personas = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-classical p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="h-screen bg-gradient-classical p-4 overflow-hidden flex flex-col">
+      <div className="max-w-6xl mx-auto flex flex-col h-full">
         {/* Navigation */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-4">
           <Button variant="outline" onClick={handleBackToHome}>
             ← Back to Home
           </Button>
         </div>
 
         {/* Category Header */}
-        <div className="text-center mb-12">
-          <div className="text-6xl mb-4">{categoryInfo.icon}</div>
-          <h1 className="text-4xl font-bold text-foreground mb-4">{categoryInfo.name}</h1>
-          <p className="text-xl text-muted-foreground">{categoryInfo.description}</p>
+        <div className="text-center mb-6">
+          <div className="text-4xl mb-2">{categoryInfo.icon}</div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{categoryInfo.name}</h1>
+          <p className="text-lg text-muted-foreground">{categoryInfo.description}</p>
         </div>
 
         {/* Characters Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 flex-1 overflow-y-auto">
           {characters.map((character) => (
             <Card 
               key={character.id}
               className="cursor-pointer transition-all duration-300 hover:shadow-glow hover:scale-105 bg-card/95 backdrop-blur-sm border-border/50"
               onClick={() => handleCharacterSelect(character)}
             >
-              <CardHeader className="text-center pb-4">
+              <CardHeader className="text-center pb-2">
                 <img 
                   src={character.image} 
                   alt={character.name}
-                  className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-primary/20 mb-4"
+                  className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-primary/20 mb-2"
                 />
-                <CardTitle className="text-2xl">{character.name}</CardTitle>
-                <CardDescription className="text-lg">{character.title}</CardDescription>
+                <CardTitle className="text-lg">{character.name}</CardTitle>
+                <CardDescription className="text-sm">{character.title}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-center mb-4">{character.description}</p>
+              <CardContent className="px-4 pb-4">
+                <p className="text-muted-foreground text-center mb-3 text-sm">{character.description}</p>
                 <div className="flex justify-center">
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full text-sm">
                     Start Conversation →
                   </Button>
                 </div>
