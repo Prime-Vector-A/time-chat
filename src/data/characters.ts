@@ -1,4 +1,18 @@
 // Character data for the voice conversation app
+// Import character images
+import jesusImg from '@/assets/jesus.jpg';
+import maryImg from '@/assets/mary-nazareth.jpg';
+import mlkImg from '@/assets/mlk.jpg';
+import mrRogersImg from '@/assets/mr-rogers.jpg';
+import jeffersonImg from '@/assets/thomas-jefferson.jpg';
+import lewisImg from '@/assets/meriwether-lewis.jpg';
+import frontierWomanImg from '@/assets/frontier-woman.jpg';
+import lincolnImg from '@/assets/abraham-lincoln.jpg';
+import churchillImg from '@/assets/winston-churchill.jpg';
+import anneFrankImg from '@/assets/anne-frank.jpg';
+import wwiiSoldierImg from '@/assets/wwii-soldier.jpg';
+import childEvacueeImg from '@/assets/child-evacuee.jpg';
+
 export interface Source {
   id: string;
   title: string;
@@ -61,7 +75,7 @@ export const characters: Character[] = [
     title: "Teacher and Savior",
     category: "christian-leaders",
     description: "Speak with Jesus Christ, whose teachings transformed the world through love, compassion, and forgiveness.",
-    image: "/src/assets/jesus.jpg",
+    image: jesusImg,
     voiceId: "TX3LPaxmHKxFdv7VOQHJ", // Liam - gentle, warm voice
     sources: [
       {
@@ -168,7 +182,7 @@ export const characters: Character[] = [
     title: "Mother of Jesus",
     category: "christian-leaders",
     description: "Converse with Mary, mother of Jesus, known for her faith, courage, and maternal wisdom.",
-    image: "/src/assets/mary-nazareth.jpg",
+    image: maryImg,
     voiceId: "cgSgspJ2msm6clMCkdW9", // Jessica - gentle, maternal voice
     sources: [
       {
@@ -275,7 +289,7 @@ export const characters: Character[] = [
     title: "Civil Rights Leader", 
     category: "christian-leaders",
     description: "Engage with Dr. King, the eloquent leader who championed civil rights through Christian principles.",
-    image: "/src/assets/mlk.jpg",
+    image: mlkImg,
     voiceId: "onwK4e9ZLuTAKqWW03F9", // Daniel - powerful, inspiring voice
     sources: [
       {
@@ -382,7 +396,7 @@ export const characters: Character[] = [
     title: "Beloved Neighbor",
     category: "christian-leaders", 
     description: "Talk with Fred Rogers, the gentle soul who taught generations about kindness and self-worth.",
-    image: "/src/assets/mr-rogers.jpg",
+    image: mrRogersImg,
     voiceId: "pFZP5JQG7iQjIQuC4Bku", // Lily - warm, gentle voice
     sources: [
       {
@@ -491,7 +505,7 @@ export const characters: Character[] = [
     title: "Founding Father & 3rd President",
     category: "american-leaders",
     description: "Discuss democracy, liberty, and enlightenment ideals with the author of the Declaration of Independence.",
-    image: "/src/assets/thomas-jefferson.jpg", 
+    image: jeffersonImg, 
     voiceId: "JBFqnCBsd6RMkjVDRZzb", // George - dignified, intellectual voice
     sources: [
       {
@@ -598,7 +612,7 @@ export const characters: Character[] = [
     title: "Explorer & Army Captain",
     category: "american-leaders",
     description: "Journey through uncharted territories with the co-leader of the Lewis and Clark Expedition.",
-    image: "/src/assets/meriwether-lewis.jpg",
+    image: lewisImg,
     voiceId: "CwhRBWXzGAHq8TQ4Fs17", // Roger - adventurous, rugged voice
     sources: [
       {
@@ -705,7 +719,7 @@ export const characters: Character[] = [
     title: "Prairie Wife & Mother", 
     category: "american-leaders",
     description: "Learn about frontier life from a strong woman who built America with her hands and heart.",
-    image: "/src/assets/frontier-woman.jpg",
+    image: frontierWomanImg,
     voiceId: "EXAVITQu4vr4xnSDxMaL", // Sarah - strong, maternal voice
     sources: [
       {
@@ -812,7 +826,7 @@ export const characters: Character[] = [
     title: "16th President", 
     category: "american-leaders",
     description: "Engage with the Great Emancipator who preserved the Union and freed the enslaved.",
-    image: "/src/assets/abraham-lincoln.jpg",
+    image: lincolnImg,
     voiceId: "IKne3meq5aSn9XLyUdCD", // Charlie - deep, thoughtful voice
     sources: [
       {
@@ -921,7 +935,7 @@ export const characters: Character[] = [
     title: "British Prime Minister",
     category: "wwii-heroes",
     description: "Converse with Britain's wartime leader who rallied a nation against tyranny.",
-    image: "/src/assets/winston-churchill.jpg",
+    image: churchillImg,
     voiceId: "bIHbv24MWmeRgasZH58o", // Will - authoritative British voice
     sources: [
       {
@@ -1028,7 +1042,7 @@ export const characters: Character[] = [
     title: "Young Diarist",
     category: "wwii-heroes",
     description: "Share thoughts with Anne, whose diary revealed hope and humanity amid darkness.",
-    image: "/src/assets/anne-frank.jpg",
+    image: anneFrankImg,
     voiceId: "pFZP5JQG7iQjIQuC4Bku", // Lily - young, hopeful voice
     sources: [
       {
@@ -1135,7 +1149,7 @@ export const characters: Character[] = [
     title: "Combat Veteran",
     category: "wwii-heroes", 
     description: "Hear firsthand accounts of courage and brotherhood from a soldier who served.",
-    image: "/src/assets/wwii-soldier.jpg",
+    image: wwiiSoldierImg,
     voiceId: "nPczCjzI2devNBz1zQrb", // Brian - strong, veteran voice
     sources: [
       {
@@ -1242,7 +1256,7 @@ export const characters: Character[] = [
     title: "Wartime Child",
     category: "wwii-heroes",
     description: "Experience WWII through the eyes of a child who was evacuated from London during the Blitz.",
-    image: "/src/assets/child-evacuee.jpg",
+    image: childEvacueeImg,
     voiceId: "Xb7hH8MSUJpSbSDYk0k2", // Alice - young British voice
     sources: [
       {

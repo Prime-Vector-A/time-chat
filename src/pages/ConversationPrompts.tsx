@@ -33,8 +33,7 @@ const ConversationPrompts = () => {
   };
 
   const handleSources = () => {
-    // TODO: Implement sources functionality
-    console.log("Sources clicked");
+    navigate(`/admin`);
   };
 
   const handleFeedback = () => {
