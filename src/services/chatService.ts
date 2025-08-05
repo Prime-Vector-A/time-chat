@@ -10,18 +10,23 @@ export interface ChatResponse {
 }
 
 export class ChatService {
-  private static async sendToWebhook(messageData: any): Promise<void> {
+  private static async sendToWebhook(messageData: any): Promise<any> {
     try {
-      await fetch('https://claritasllc.app.n8n.cloud/webhook/5b51b564-5628-4d9b-a4f0-a2c39f531673', {
+      const response = await fetch('https://claritasllc.app.n8n.cloud/webhook/5b51b564-5628-4d9b-a4f0-a2c39f531673', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(messageData)
       });
+      
+      if (response.ok) {
+        return await response.json();
+      }
+      return null;
     } catch (error) {
       console.error('Webhook error:', error);
-      // Don't throw error to avoid disrupting the main chat flow
+      return null;
     }
   }
 
@@ -32,57 +37,28 @@ export class ChatService {
     promptType?: string
   ): Promise<ChatResponse> {
     try {
-      // Send user message to webhook
-      await this.sendToWebhook({
+      // Send user message to webhook and wait for response
+      const webhookResponse = await this.sendToWebhook({
         type: 'user_message',
         characterId,
         message,
         promptType,
+        conversationHistory: conversationHistory.map(msg => ({
+          role: msg.role,
+          content: msg.content
+        })),
         timestamp: new Date().toISOString()
       });
 
-      // Call the Supabase Edge Function directly
-      const response = await fetch(`${window.location.origin}/functions/v1/chat-with-character`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`,
-        },
-        body: JSON.stringify({
-          characterId,
-          message,
-          conversationHistory: conversationHistory.map(msg => ({
-            role: msg.role,
-            content: msg.content
-          })),
-          promptType
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Function call error:', response.status, errorText);
-        throw new Error(`HTTP ${response.status}: Failed to get response from AI`);
+      if (webhookResponse && webhookResponse.output) {
+        return {
+          message: webhookResponse.output,
+          character: characterId
+        };
       }
 
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      // Send AI response to webhook
-      await this.sendToWebhook({
-        type: 'ai_response',
-        characterId,
-        userMessage: message,
-        aiResponse: data.message,
-        character: data.character,
-        promptType,
-        timestamp: new Date().toISOString()
-      });
-
-      return data;
+      // Fallback error if webhook doesn't respond properly
+      throw new Error('No response received from webhook');
     } catch (error) {
       console.error('Chat service error:', error);
       throw error;
