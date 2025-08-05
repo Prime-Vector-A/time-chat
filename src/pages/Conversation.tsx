@@ -49,6 +49,7 @@ const Conversation = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showGuidelines, setShowGuidelines] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [sessionId, setSessionId] = useState<string>("");
   const { toast } = useToast();
   const [threads, setThreads] = useState<Thread[]>([
     {
@@ -66,6 +67,23 @@ const Conversation = () => {
   ]);
   const [currentThreadId, setCurrentThreadId] = useState<string>("new");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Generate or restore session ID
+  useEffect(() => {
+    const generateSessionId = () => {
+      return crypto.randomUUID();
+    };
+
+    const sessionKey = `session_${characterId}_${promptType || 'general'}`;
+    let existingSessionId = localStorage.getItem(sessionKey);
+    
+    if (!existingSessionId) {
+      existingSessionId = generateSessionId();
+      localStorage.setItem(sessionKey, existingSessionId);
+    }
+    
+    setSessionId(existingSessionId);
+  }, [characterId, promptType]);
 
   const character = getCharacterById(characterId!);
 
@@ -136,7 +154,8 @@ const Conversation = () => {
         character.id,
         messageToSend,
         conversationHistory,
-        promptType || undefined
+        promptType || undefined,
+        sessionId
       );
 
       const aiResponse: Message = {
@@ -179,11 +198,21 @@ const Conversation = () => {
   const handleClearMemory = () => {
     setMessages([]);
     setCurrentThreadId("new");
+    // Generate new session ID for fresh start
+    const newSessionId = crypto.randomUUID();
+    const sessionKey = `session_${characterId}_${promptType || 'general'}`;
+    localStorage.setItem(sessionKey, newSessionId);
+    setSessionId(newSessionId);
   };
 
   const handleNewThread = () => {
     setMessages([]);
     setCurrentThreadId("new");
+    // Generate new session ID for new thread
+    const newSessionId = crypto.randomUUID();
+    const sessionKey = `session_${characterId}_${promptType || 'general'}`;
+    localStorage.setItem(sessionKey, newSessionId);
+    setSessionId(newSessionId);
   };
 
   const handleFeedback = () => {

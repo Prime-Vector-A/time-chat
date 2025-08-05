@@ -34,7 +34,8 @@ export class ChatService {
     characterId: string,
     message: string,
     conversationHistory: ChatMessage[] = [],
-    promptType?: string
+    promptType?: string,
+    sessionId?: string
   ): Promise<ChatResponse> {
     try {
       // Send user message to webhook and wait for response
@@ -43,6 +44,7 @@ export class ChatService {
         characterId,
         message,
         promptType,
+        sessionId,
         conversationHistory: conversationHistory.map(msg => ({
           role: msg.role,
           content: msg.content
